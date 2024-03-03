@@ -1,0 +1,20 @@
+# Config for apply-config.sh script
+# Leave values blank to disable configuration
+
+# Hostname
+CONFIG_HOSTNAME=pi-k3s-gitops-$RANDOM
+
+# Credentials
+CONFIG_USER_USERNAME=pi
+CONFIG_USER_PASSWORD=raspberry
+
+# WiFi
+CONFIG_WIFI_SSID=
+CONFIG_WIFI_PASS=
+
+# SSH
+CONFIG_SSH_ENABLED=1
+
+# Locale
+CONFIG_LOCALE_KEYMAP=gb
+CONFIG_LOCALE_TIMEZONE=Europe/London

@@ -1,0 +1,58 @@
+version: "2.1"
+services:
+  pi-tftp:
+    image: pghalliday/tftp
+    # depends_on:
+    #   - builder
+    container_name: pi-tftp
+    network_mode: host
+    volumes:
+      - netboot-boot-data:/var/tftpboot
+    ports:
+      - 69:69/udp
+    restart: unless-stopped
+  pi-nfs:
+    image: erichough/nfs-server
+    # depends_on:
+    #   - builder
+    container_name: pi-nfs
+    privileged: true
+    environment:
+      - NFS_VERSION=3
+      - NFS_EXPORT_0=/mnt/nfsshare *(rw,fsid=0,async,no_subtree_check,no_auth_nlm,insecure,no_root_squash)
+      - NFS_LOG_LEVEL=DEBUG
+    volumes:
+      - netboot-os-data:/mnt/nfsshare
+    ports:
+      - 111:111
+      - 111:111/udp
+      - 2049:2049
+      - 2049:2049/udp
+      - 32765-32768:32765-32768
+      - 32765-32768:32765-32768/udp
+    restart: unless-stopped
+  builder:
+    container_name: builder
+    build:
+      dockerfile: builder.Dockerfile
+      network: host
+    privileged: true
+    environment:
+      # RaspiOS Min
+      - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2023-12-11/2023-12-11-raspios-bookworm-arm64-lite.img.xz
+      # RaspiOS
+      # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2023-12-06/2023-12-05-raspios-bookworm-arm64.img.xz
+      # RaspiOS Full
+      # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_full_arm64/images/raspios_full_arm64-2023-12-06/2023-12-05-raspios-bookworm-arm64-full.img.xz
+      # NixOS
+      # - DOWNLOAD_LINK=https://hydra.nixos.org/build/250051124/download/1/nixos-sd-image-23.11.4463.84d981bae8b5-aarch64-linux.img.zst
+      - CLEAN_BOOT_FILES=true
+      # - CLEAN_OS_FILES=true
+    volumes:
+      - .:/mnt/netboot
+      - netboot-boot-data:/mnt/netboot/boot
+      - netboot-os-data:/mnt/netboot/os
+
+volumes:
+  netboot-boot-data:
+  netboot-os-data:

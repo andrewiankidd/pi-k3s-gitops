@@ -1,0 +1,30 @@
+---
+title: pi-k3s-gitops
+description: Get started building your docs site with Starlight.
+template: splash
+hero:
+  tagline: Documentation for my Pi Cluster
+  image:
+    file: ../../assets/houston.webp
+  actions:
+    - text: Get Started
+      link: /guides/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: About
+      link: /reference/about/
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Next steps
+
+<CardGrid>
+	<Card title="GitOps" icon="pencil">
+		Edit the repo to action changes
+	</Card>
+	<Card title="Read the docs" icon="open-book">
+		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	</Card>
+</CardGrid>
