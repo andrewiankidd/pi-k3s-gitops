@@ -4,7 +4,8 @@ import starlight from '@astrojs/starlight';
 // https://astro.build/config
 export default defineConfig({
     site: 'https://andrewiankidd.github.io/pi-k3s-gitops',
-	integrations: [
+	base: '/pi-k3s-gitops',
+    integrations: [
 		starlight({
 			title: 'pi-k3s-gitops',
 			social: {
