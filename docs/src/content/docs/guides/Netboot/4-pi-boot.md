@@ -27,7 +27,7 @@ With the Pi connected to the network, let's boot it.
 
 Turn on the Pi!
 <video controls width="100%" title="First Boot">
-    <source src="../../../../assets/docs/guides/bootstrap/prep/first-boot.mp4" type="video/mp4">
+    <source src="/pi-k3s-gitops/assets/docs/guides/bootstrap/prep/first-boot.mp4" type="video/mp4">
     Your browser does not support the video tag.
 </video>
 
