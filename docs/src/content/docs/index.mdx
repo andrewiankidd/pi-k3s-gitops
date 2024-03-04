@@ -8,23 +8,29 @@ hero:
     file: ../../assets/houston.webp
   actions:
     - text: Get Started
-      link: ./guides/getting-started/
+      link: /pi-k3s-gitops/guides/getting-started/
       icon: right-arrow
       variant: primary
-    - text: About
-      link: ./reference/about/
-      icon: external
+#    - text: About
+#     link: /pi-k3s-gitops/reference/about/
+#     icon: external
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## More
 
-<CardGrid>
-	<Card title="GitOps" icon="pencil">
-		Edit the repo to action changes
+<CardGrid stagger>
+	<Card title="ARM64" icon="pencil">
+		Utilizing ARM64 based SBCs ([Raspberry Pi 5](https://thepihut.com/products/raspberry-pi-5)) for energy efficiency, cost-effectiveness, and versatility.
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="GitOps" icon="github">
+		Using [Git](https://github.com/andrewiankidd/pi-k3s-gitops) as the single source of truth ensures a version-controlled, consistent deployment process.
+	</Card>
+    <Card title="Clustered" icon="bars">
+		Cluster management with [K3s](http://k3s.io) a highly available, certified Kubernetes distribution designed for production workloads in unattended, resource-constrained, remote locations or inside IoT appliances.
+	</Card>
+    <Card title="Documented" icon="open-book">
+		Struggle along with me in real-time with documentation built with [Starlight](https://starlight.astro.build/)
 	</Card>
 </CardGrid>
