@@ -49,9 +49,8 @@ git clone https://github.com/andrewiankidd/pi-k3s-gitops.git
 cd pi-k3s-gitops
 sudo modprobe nfs
 sudo modprobe nfsd
-systemctl stop rpcbind
-systemctl stop rpcbind.socket
-sudo
+sudo systemctl stop rpcbind
+sudo systemctl stop rpcbind.socket
 sudo docker compose -f ./src/bootstrap/netboot/docker-compose.yml up
 ```
 
@@ -114,7 +113,7 @@ Nmap done: 0 IP addresses (0 hosts up) scanned in 3.60 seconds
 As you can see on the last line of the dhcp script output, the TFTP server is now defined and is the IP of the machine running Docker 🎉
 
 If you power up your Pi again, you should see it query the TFTP server for files (`TFTP 1: file not found`)
-![Very poor photo of a Raspberry Pi bootloader attempting to read files from TFTP](../../../../assets/docs/guides/bootstrap/prep/netboot-tftp.png)
+![Capture of a Raspberry Pi bootloader attempting to read files from TFTP](../../../../assets/docs/guides/bootstrap/prep/netboot-tftp.png)
 
 ## Next Steps
 

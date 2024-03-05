@@ -17,7 +17,7 @@ The Raspberry Pi foundation [provide downloadable SD card images of their OS](ht
 - **Image File**
     - The Raspios img file is a disk image of the Raspberry Pi OS, encapsulating the entire operating system, bootloader, and file system, ready to be written to an SD card for use with Raspberry Pi single-board computers.
 - **Bootloader Partition**
-    - The bootloader partition of the image file contains firmware and configuration information necessary for initializing the Raspberry Pi hardware during the boot process.
+    - The bootloader partition of the image file contains kernel, firmware and configuration information necessary for initializing the Raspberry Pi during the boot process.
     - The bootloader partition then tells the Pi where to find the OS partition
 - **OS Partition**
     - The OS partition of the image file contains the actual operating system files, including the Linux kernel, system libraries, and user-space applications, organized in a file system structure compatible with the Raspberry Pi hardware.
@@ -30,12 +30,12 @@ Get rid of any surrounding compression, ensure you have the IMG file ready in a 
 
 We need to mount the partitions contained within the image so we can properly extract the contents.
 
-To do this the easy way, you can mount the image with with `losetup -Pf` which will automatically figure out partition info of the provided file and create loop devices for each partition
+To do this the easy way, you can mount the image with with `losetup -Pf <image-file> --show` which will automatically figure out partition info of the provided file and create loop devices for each partition
 ```
 root@ubuntuvm:~$ losetup -Pf ./download/extracted/2023-12-11-raspios-bookworm-arm64-lite.img --show
 /dev/loop100
 ```
-The command will return the name of the loop device being used, the partitions will be mounted as `p${Index}` suffixed devices, which can be mounted as normal:
+The command will return the name of the loop device being used, the partitions will be available as `p${Index}` suffixed devices, which can be mounted like so:
 ```
 mount /dev/loop100p1 /mnt/tmp-img-boot
 mount /dev/loop100p2 /mnt/tmp-img-os

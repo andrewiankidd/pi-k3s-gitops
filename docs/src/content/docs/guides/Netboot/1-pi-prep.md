@@ -49,7 +49,7 @@ You can confirm this by removing the USB/SD and rebooting the Pi and watching th
 
 The 'boot' option should now display NETWORK, and the 'net' option should now show the Pi's IP address, you will also see scrolling output of the Pi trying to locate a TFTP server.
 
-![Poor Quality photo of the Pi 5 bootloader in netboot mode](../../../../assets/docs/guides/bootstrap/prep/netboot-enabled.png)
+![Capture of the Pi 5 bootloader in netboot mode](../../../../assets/docs/guides/bootstrap/prep/netboot-enabled.png)
 
 Your Pi is now configured to boot from the network 🎉
 
