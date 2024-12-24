@@ -60,10 +60,12 @@ if [ -n "$CONFIG_USER_USERNAME" ] && [ -n "$CONFIG_USER_PASSWORD" ]; then
     print_string "Actioning CONFIG_USER_USERNAME"
     CONFIG_USER_PASSWORD=$(echo $CONFIG_USER_PASSWORD | openssl passwd -6 -stdin)
     if [ -f /usr/lib/userconf-pi/userconf ]; then
-        /usr/lib/userconf-pi/userconf '$CONFIG_USER_USERNAME' '$CONFIG_USER_PASSWORD'
+        print_string "Calling userconf..."
+        /usr/lib/userconf-pi/userconf $CONFIG_USER_USERNAME $CONFIG_USER_PASSWORD
     else
+        print_string "Calling usermod..."
         FIRSTUSER=`getent passwd 1000 | cut -d: -f1`
-        print_string "$FIRSTUSER:"'$CONFIG_USER_PASSWORD' | chpasswd -e
+        echo "$FIRSTUSER:$CONFIG_USER_PASSWORD" | chpasswd -e
         if [ "$FIRSTUSER" != "$CONFIG_USER_USERNAME" ]; then
             usermod -l "$CONFIG_USER_USERNAME" "$FIRSTUSER"
             usermod -m -d "/home/$CONFIG_USER_USERNAME" "$CONFIG_USER_USERNAME"
