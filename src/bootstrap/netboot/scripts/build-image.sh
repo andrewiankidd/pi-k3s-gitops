@@ -51,7 +51,7 @@ if [ ! -f "$EXTRACT_DIRECTORY/$EXTRACT_FILENAME" ]; then
     if [[ "$ARCHIVE_FILE" == *.zst ]]; then
         zstd -d "$ARCHIVE_FILE" -o "$EXTRACT_DIRECTORY/$EXTRACT_FILENAME"
     elif [[ "$ARCHIVE_FILE" == *.xz ]]; then
-        unxz -f -k "$ARCHIVE_FILE" > "$EXTRACT_DIRECTORY/$EXTRACT_FILENAME"
+        unxz -f -k -c "$ARCHIVE_FILE" > "$EXTRACT_DIRECTORY/$EXTRACT_FILENAME"
     elif [[ "$ARCHIVE_FILE" == *.tar ]]; then
         tar -xf "$ARCHIVE_FILE" -C "$EXTRACT_DIRECTORY/$EXTRACT_FILENAME"
     elif [[ "$ARCHIVE_FILE" == *.zip ]]; then
