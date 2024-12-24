@@ -146,6 +146,7 @@ echo -e $FSTAB_CONTENTS > $OS_EXPORT_DIRECTORY/$IMG_FILENAME/etc/fstab
 
 # copying assets
 echo "Copying assets from '$ASSETS_DIRECTORY' to '$OS_EXPORT_DIRECTORY/$IMG_FILENAME/'"
+find $ASSETS_DIRECTORY -type f -name "*.sh" -exec chmod +x {} +;
 rsync -xar --inplace --progress $ASSETS_DIRECTORY/ $OS_EXPORT_DIRECTORY/$IMG_FILENAME/
 
 # # Find all .service files in the specified directory
