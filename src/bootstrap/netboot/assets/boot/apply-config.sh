@@ -30,7 +30,7 @@ if [ -e "$CONFIG_FILE" ]; then
 elif [ -e "$CONFIG_FILE.example" ]; then
     print_string "!Parsing example config file: $CONFIG_FILE.example"
     set -o allexport
-    source $CONFIG_FILE.example
+    source "$CONFIG_FILE.example"
     printenv
     set +o allexport
 else
