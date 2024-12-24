@@ -27,6 +27,12 @@ if [ -e "$CONFIG_FILE" ]; then
     source $CONFIG_FILE
     printenv
     set +o allexport
+elif [ -e "$CONFIG_FILE.example" ]; then
+    print_string "!Parsing example config file: $CONFIG_FILE.example"
+    set -o allexport
+    source "$CONFIG_FILE.example"
+    printenv
+    set +o allexport
 else
     print_string "Config file does not exist: $CONFIG_FILE"
     print_string "Starting system as normal..."
@@ -149,6 +155,7 @@ fi
 # clean up
 print_string "Removing: $CONFIG_FILE"
 rm -f $CONFIG_FILE
+rm -f "$CONFIG_FILE.example"
 
 # reboot
 print_string "Done! Starting System..."
