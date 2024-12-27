@@ -1,2 +1,10 @@
 download/
 .config
+**.log
+**.lck
+**.scoreboard
+src/bootstrap/netboot/boot/*
+src/bootstrap/netboot/os/*
+vm/
+/src/bootstrap/netboot/raspberry-pi-nix/
+/src/bootstrap/netboot/.nix_ready

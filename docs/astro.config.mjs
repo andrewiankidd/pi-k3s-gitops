@@ -5,6 +5,7 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
     site: 'https://andrewiankidd.github.io/pi-k3s-gitops',
 	base: '/pi-k3s-gitops',
+    server: { host: true},
     integrations: [
 		starlight({
 			title: 'pi-k3s-gitops',
@@ -14,7 +15,16 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Guides',
-					autogenerate: { directory: 'guides' },
+                    items: [
+                        {
+                            label: 'Netboot',
+                            autogenerate: { directory: 'guides/Netboot' },
+                        },
+                        {
+                            label: 'Master Node Creation',
+                            autogenerate: { directory: 'guides/Master Node Creation' },
+                        },
+                    ]
 				},
 				{
 					label: 'Reference',

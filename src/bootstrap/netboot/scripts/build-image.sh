@@ -35,8 +35,13 @@ OS_EXPORT_DIRECTORY=./os
 ##############################
 
 # download (likely compressed) Image File
-echo "Downloading '$DOWNLOAD_FILE' [$DOWNLOAD_LINK]"
-wget -N $DOWNLOAD_LINK -e robots=off --no-check-certificate -P "$DOWNLOAD_DIRECTORY"
+if [[ "$DOWNLOAD_LINK" == file://* ]]; then
+    echo "Skipping download: '$DOWNLOAD_FILE' is a local file (file:// URL)"
+else
+    # If not a file:// URL, proceed with wget
+    echo "Downloading '$DOWNLOAD_FILE' [$DOWNLOAD_LINK]"
+    wget -N $DOWNLOAD_LINK -e robots=off --no-check-certificate -P "$DOWNLOAD_DIRECTORY"
+fi
 
 # find compressed image file
 ARCHIVE_FILE=$(find $DOWNLOAD_DIRECTORY -iname "$DOWNLOAD_FILE")
@@ -139,10 +144,13 @@ echo "Patching '$BOOT_EXPORT_DIRECTORY/cmdline.txt'"
 CMDLINE_CONTENTS="selinux=0 dwc_otg.lpm_enable=0 console=tty1 rootwait rw nfsroot=192.168.0.108:/mnt/nfsshare/$IMG_FILENAME,v3 ip=dhcp root=/dev/nfs elevator=deadline systemd.log_level=info systemd.log_target=console systemd.debug-shell=1 init=/boot/apply-config.sh"
 echo $CMDLINE_CONTENTS > $BOOT_EXPORT_DIRECTORY/cmdline.txt
 
-# patch /etc/fstab to use NFS
-echo "Patching '$OS_EXPORT_DIRECTORY/$IMG_FILENAME/etc/fstab'"
-FSTAB_CONTENTS="proc                       /proc           proc   defaults          0       0\n192.168.0.108:/mnt/nfsshare/$IMG_FILENAME/boot/firmware  /boot/firmware  nfs    defaults          0       2\n192.168.0.108:/mnt/nfsshare/$IMG_FILENAME                /               nfs    defaults,noatime  0       1"
-echo -e $FSTAB_CONTENTS > $OS_EXPORT_DIRECTORY/$IMG_FILENAME/etc/fstab
+# patch /etc/fstab (if exists) to use NFS
+FSTAB_PATH=$OS_EXPORT_DIRECTORY/$IMG_FILENAME/etc/fstab
+if [ -f "$FSTAB_PATH" ]; then
+    echo "Patching '$FSTAB_PATH'"
+    FSTAB_CONTENTS="proc                       /proc           proc   defaults          0       0\n192.168.0.108:/mnt/nfsshare/$IMG_FILENAME/boot/firmware  /boot/firmware  nfs    defaults          0       2\n192.168.0.108:/mnt/nfsshare/$IMG_FILENAME                /               nfs    defaults,noatime  0       1"
+    echo -e $FSTAB_CONTENTS > $FSTAB_PATH
+fi
 
 # copying assets
 echo "Copying assets from '$ASSETS_DIRECTORY' to '$OS_EXPORT_DIRECTORY/$IMG_FILENAME/'"
@@ -163,6 +171,10 @@ rsync -xar --inplace --progress $ASSETS_DIRECTORY/ $OS_EXPORT_DIRECTORY/$IMG_FIL
 #     echo "ln -sf \"$0\" \"/etc/systemd/system/multi-user.target.wants/$(basename \"$0\")\""
 #     ln -sf "$0" "/etc/systemd/system/multi-user.target.wants/$(basename "$0")"
 # ' {} \;
+
+# cleanup
+[ -f /mnt/netboot/.nix_ready ] && rm /mnt/netboot/.nix_ready
+losetup -D
 
 # we're done 🎉
 echo "Done!"

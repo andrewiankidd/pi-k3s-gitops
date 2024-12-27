@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-docker compose down
-docker volume prune -a
-losetup -D
-docker compose up
+sudo docker compose down
+sudo docker volume prune -a
+sudo losetup -D
+sudo docker compose up
