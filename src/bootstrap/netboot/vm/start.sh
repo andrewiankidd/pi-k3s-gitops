@@ -32,6 +32,10 @@ if ! command -v multipass &> /dev/null; then
     exit 1
 fi
 
+# Set the default bridged network for created VMs
+NETWORK_NAME=$(multipass networks | grep -v 'switch' | awk 'NR > 1 {print $1}' | head -n 1)
+multipass set local.bridged-network="$NETWORK_NAME"
+
 # check if we need to create vm
 VM_EXISTS=$(multipass list | grep -q "^$VM_NAME\s" && echo true || echo false)
 if [ "$VM_REBUILD" = true ] || [ "$VM_EXISTS" = false ]; then
@@ -45,9 +49,6 @@ if [ "$VM_REBUILD" = true ] || [ "$VM_EXISTS" = false ]; then
     echo "CPUs: $VM_CPUS, Memory: $VM_MEMORY, Disk: $VM_DISK"
 
     # Create VM using Multipass
-    NETWORK_NAME=$(multipass networks | grep -v 'switch' | awk 'NR > 1 {print $1}' | head -n 1)
-    multipass set local.bridged-network="$NETWORK_NAME"
-    # multipass set local.bridged-network="Default Switch"
     multipass launch $VM_OS --name $VM_NAME --cpus $VM_CPUS --memory $VM_MEMORY --disk $VM_DISK --bridged
     if [ $? -ne 0 ]; then
         echo "Failed to create VM. Please ensure Multipass is installed and running."
