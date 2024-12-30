@@ -43,6 +43,10 @@ if [ "$VM_REBUILD" = true ] || [ "$VM_EXISTS" = false ]; then
         echo "[VM_REBUILD] Deleting existing VM..."
         multipass delete $VM_NAME
         multipass purge
+        if [ $? -ne 0 ]; then
+            echo "Failed to delete VM."
+            exit 1
+        fi
     fi
 
     echo "Creating new VM '$VM_NAME' with the following settings:"
