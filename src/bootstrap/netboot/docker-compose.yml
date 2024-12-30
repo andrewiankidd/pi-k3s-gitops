@@ -63,12 +63,12 @@ services:
     #   - seccomp=unconfined  # Disables seccomp profile
     privileged: true
     command: bash /mnt/netboot/scripts/build-nix-sd.sh
-    healthcheck:
-      test: ["CMD", "test", "-f", "/mnt/netboot/.nix_ready"]
-      interval: 1m
-      timeout: 3s
-      retries: 30
-      start_period: 5m
+    # healthcheck:
+    #   test: ["CMD", "test", "-f", "/mnt/netboot/.nix_ready"]
+    #   interval: 1m
+    #   timeout: 3s
+    #   retries: 30
+    #   start_period: 5m
     volumes:
       - .:/mnt/netboot
       - netboot-boot-data:/mnt/netboot/boot

@@ -173,7 +173,7 @@ rsync -xar --inplace --progress $ASSETS_DIRECTORY/ $OS_EXPORT_DIRECTORY/$IMG_FIL
 # ' {} \;
 
 # cleanup
-[ -f /mnt/netboot/.nix_ready ] && rm /mnt/netboot/.nix_ready
+# [ -f /mnt/netboot/.nix_ready ] && rm /mnt/netboot/.nix_ready
 losetup -D
 
 # we're done 🎉

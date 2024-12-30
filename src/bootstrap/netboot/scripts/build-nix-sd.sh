@@ -46,10 +46,10 @@ ls -l result/net-image/nixos*/*-root-fs/*
 echo "Copying netImage os files to /mnt/netboot/nixos*/*-root-fs/*"
 nix-shell -p rsync --run "rsync -xarvv --inplace --progress result/net-image/nixos*/*-root-fs/* /mnt/netboot/os/"
 
-# mark as completed (container health check)
-LOCK_FILE="/mnt/netboot/.nix_ready"
-touch $LOCK_FILE
-echo "Done!"
+# # mark as completed (container health check)
+# LOCK_FILE="/mnt/netboot/.nix_ready"
+# touch $LOCK_FILE
+# echo "Done!"
 
 # # Wait for the builder to complete (it will delete the lock file)
 # while [ -f $LOCK_FILE ]; do

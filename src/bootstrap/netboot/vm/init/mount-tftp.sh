@@ -39,4 +39,5 @@ if [ -f "${TFTP_MOUNT_POINT}/cmdline.txt" ] && [ -s "${TFTP_MOUNT_POINT}/cmdline
     cat "${TFTP_MOUNT_POINT}/cmdline.txt"
 else
     echo "Failed to transfer file from TFTP server or the file is empty. Please check the configuration."
+    exit 1
 fi

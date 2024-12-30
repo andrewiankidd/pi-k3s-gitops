@@ -15,7 +15,7 @@ VM_NAME="ubuntu-vm"
 VM_CPUS=4
 VM_MEMORY="4G"
 VM_DISK="30G"
-VM_REBUILD=true
+VM_REBUILD=false
 
 # Get the parent directory of the script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

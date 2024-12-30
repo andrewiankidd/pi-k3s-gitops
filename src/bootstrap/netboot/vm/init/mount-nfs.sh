@@ -38,4 +38,5 @@ if mount | grep -q "${NFS_MOUNT_POINT}"; then
   echo "NFS share mounted successfully at ${NFS_MOUNT_POINT}."
 else
   echo "Failed to mount NFS share. Please check the configuration."
+  exit 1
 fi
