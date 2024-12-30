@@ -2,6 +2,9 @@
 set -e
 uname -a
 
+nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+nix-channel --update
+
 # Set up cache
 echo "Installing Cachix"
 nix-env -iA cachix -f https://cachix.org/api/v1/install
@@ -30,21 +33,26 @@ echo "Building netImage"
 NIX_DEBUG=1
 nix build --repair --option substitute true --option fallback false --system aarch64-linux --extra-experimental-features "nix-command flakes" '.#nixosConfigurations.rpi-example.config.system.build.netImage' --show-trace --print-build-logs -v
 
+echo "Build complete."
+
 # export to volume
-echo "Copying netImage to /mnt/netboot/download/"
-mkdir -p /mnt/netboot/download
-nix-channel --add https://nixos.org/channels/nixpkgs-unstable
-nix-channel --update
-nix-shell -p rsync --run "rsync -xar --inplace --progress result/net-image/boot /mnt/netboot/boot/"
-nix-shell -p rsync --run "rsync -xar --inplace --progress result/net-image/nixos*/*-root-fs /mnt/netboot/os/"
+echo "boot files"
+ls -l result/net-image/boot
+echo "Copying netImage boot files to /mnt/netboot/boot/"
+nix-shell -p rsync --run "rsync -xarvv --inplace --progress result/net-image/boot/* /mnt/netboot/boot/"
+
+echo "os files"
+ls -l result/net-image/nixos*/*-root-fs/*
+echo "Copying netImage os files to /mnt/netboot/nixos*/*-root-fs/*"
+nix-shell -p rsync --run "rsync -xarvv --inplace --progress result/net-image/nixos*/*-root-fs/* /mnt/netboot/os/"
 
 # mark as completed (container health check)
 LOCK_FILE="/mnt/netboot/.nix_ready"
 touch $LOCK_FILE
 echo "Done!"
 
-# Wait for the builder to complete (it will delete the lock file)
-while [ -f $LOCK_FILE ]; do
-    echo "Waiting for builder to complete..."
-    sleep 10
-done
+# # Wait for the builder to complete (it will delete the lock file)
+# while [ -f $LOCK_FILE ]; do
+#     echo "Waiting for builder to complete..."
+#     sleep 10
+# done

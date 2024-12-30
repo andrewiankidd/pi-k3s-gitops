@@ -5,6 +5,6 @@ download/
 **.scoreboard
 src/bootstrap/netboot/boot/*
 src/bootstrap/netboot/os/*
-vm/
+/vm/
 /src/bootstrap/netboot/raspberry-pi-nix/
 /src/bootstrap/netboot/.nix_ready

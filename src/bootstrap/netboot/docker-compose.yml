@@ -31,30 +31,30 @@ services:
       - 32765-32768:32765-32768
       - 32765-32768:32765-32768/udp
     restart: unless-stopped
-  builder:
-    container_name: builder
-    build:
-      dockerfile: builder.Dockerfile
-      network: host
-    depends_on:
-      nixos-sd-image:
-        condition: service_healthy
-    privileged: true
-    environment:
-      # RaspiOS Min
-      # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2023-12-11/2023-12-11-raspios-bookworm-arm64-lite.img.xz
-      # RaspiOS
-      # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2023-12-06/2023-12-05-raspios-bookworm-arm64.img.xz
-      # RaspiOS Full
-      # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_full_arm64/images/raspios_full_arm64-2023-12-06/2023-12-05-raspios-bookworm-arm64-full.img.xz
-      # NixOS
-      - DOWNLOAD_LINK=file://mnt/netboot/download/nixos-sd-image-24.05.20241006.ecbc1ca-aarch64-linux.img.zst
-      - CLEAN_BOOT_FILES=true
-      # - CLEAN_OS_FILES=true
-    volumes:
-      - .:/mnt/netboot
-      - netboot-boot-data:/mnt/netboot/boot
-      - netboot-os-data:/mnt/netboot/os
+  # builder:
+  #   container_name: builder
+  #   build:
+  #     dockerfile: builder.Dockerfile
+  #     network: host
+  #   depends_on:
+  #     nixos-sd-image:
+  #       condition: service_healthy
+  #   privileged: true
+  #   environment:
+  #     # RaspiOS Min
+  #     # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2023-12-11/2023-12-11-raspios-bookworm-arm64-lite.img.xz
+  #     # RaspiOS
+  #     # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2023-12-06/2023-12-05-raspios-bookworm-arm64.img.xz
+  #     # RaspiOS Full
+  #     # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_full_arm64/images/raspios_full_arm64-2023-12-06/2023-12-05-raspios-bookworm-arm64-full.img.xz
+  #     # NixOS
+  #     - DOWNLOAD_LINK=file://mnt/netboot/download/nixos-sd-image-24.05.20241006.ecbc1ca-aarch64-linux.img.zst
+  #     - CLEAN_BOOT_FILES=true
+  #     # - CLEAN_OS_FILES=true
+  #   volumes:
+  #     - .:/mnt/netboot
+  #     - netboot-boot-data:/mnt/netboot/boot
+  #     - netboot-os-data:/mnt/netboot/os
   nixos-sd-image:
     container_name: nixos-sd-image
     image: nixos/nix:2.25.3
@@ -70,7 +70,7 @@ services:
       retries: 30
       start_period: 5m
     volumes:
-      - .:/mnt/netboot:Z
+      - .:/mnt/netboot
       - netboot-boot-data:/mnt/netboot/boot
       - netboot-os-data:/mnt/netboot/os
 volumes:
