@@ -9,8 +9,9 @@ lsb_release -a
 # TFTP server and configuration
 TFTP_SERVER="localhost"
 TFTP_DIR="/tftpboot"
-TFTP_MOUNT_POINT="/mnt/tftp"  # Mount point for TFTP
+TFTP_MOUNT_POINT="/tmp"  # Mount point for TFTP
 TFTP_FSTAB_ENTRY="${TFTP_SERVER}:${TFTP_DIR} ${TFTP_MOUNT_POINT} tftp mode=udp,nolock 0 0"
+TEST_FILE="test.txt"
 
 # Install TFTP client
 sudo apt-get update -q && sudo apt-get install -yq tftp-hpa
@@ -31,12 +32,12 @@ fi
 
 # Use TFTP client to fetch a file as a test
 echo "Testing TFTP connection..."
-tftp -v ${TFTP_SERVER} -c get test.txt -o ${TFTP_MOUNT_POINT}/test.txt
+tftp -v ${TFTP_SERVER} -c get $TEST_FILE ${TFTP_MOUNT_POINT}/$TEST_FILE
 
 # Check if the TFTP operation was successful and the file is not empty
-if [ -f "${TFTP_MOUNT_POINT}/test.txt" ] && [ -s "${TFTP_MOUNT_POINT}/test.txt" ]; then
-    echo "TFTP file transfer successful, file saved to ${TFTP_MOUNT_POINT}/test.txt."
-    cat "${TFTP_MOUNT_POINT}/test.txt"
+if [ -f "${TFTP_MOUNT_POINT}/$TEST_FILE" ] && [ -s "${TFTP_MOUNT_POINT}/$TEST_FILE" ]; then
+    echo "TFTP file transfer successful, file saved to ${TFTP_MOUNT_POINT}/$TEST_FILE."
+    cat "${TFTP_MOUNT_POINT}/$TEST_FILE"
 else
     echo "Failed to transfer file from TFTP server or the file is empty. Please check the configuration."
     exit 1
