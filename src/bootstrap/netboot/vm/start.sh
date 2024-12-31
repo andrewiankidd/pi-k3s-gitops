@@ -15,7 +15,7 @@ VM_NAME="ubuntu-vm"
 VM_CPUS=4
 VM_MEMORY="4G"
 VM_DISK="30G"
-VM_REBUILD=false
+VM_REBUILD=true
 
 # Get the parent directory of the script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -62,7 +62,11 @@ fi
 
 # enable privileged mounts
 if [[ "$OS" == "Windows_NT" ]]; then
-    multipass set local.privileged-mounts=true
+    CURRENT_SETTING=$(multipass get local.privileged-mounts)
+    if [[ "$CURRENT_SETTING" != "true" ]]; then
+        echo "Enabling privileged mounts for Windows..."
+        multipass set local.privileged-mounts=true
+    fi
 fi
 
 # Mount the parent directory to the VM if not already mounted

@@ -21,7 +21,7 @@ echo "Cloning $REPO_URL into $DIR_NAME"
 if [ -d "$DIR_NAME" ]; then
     echo "$DIR_NAME already exists. Pulling latest changes..."
     cd "$DIR_NAME"
-    git pull origin $REPO_BRANCH
+    # git pull origin $REPO_BRANCH
 else
     echo "$DIR_NAME does not exist. Cloning repository..."
     git clone -b $REPO_BRANCH "$REPO_URL" "$DIR_NAME"

@@ -13,7 +13,7 @@ NFS_MOUNT_POINT="/mnt/nfs"
 NFS_FSTAB_ENTRY="${NFS_SERVER}:${NFS_SHARE} ${NFS_MOUNT_POINT} nfs vers=3,nolock 0 0"
 
 # install nfs client
-sudo apt-get update && sudo apt-get install -y nfs-common
+sudo apt-get update -q && sudo apt-get install -yq nfs-common
 
 # Create the mount point if it doesn't exist
 if [ ! -d "${NFS_MOUNT_POINT}" ]; then
