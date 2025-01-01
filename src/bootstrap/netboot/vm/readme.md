@@ -27,7 +27,11 @@ The VM is managed by [multipass](https://multipass.run/docs), a cross-platform t
     ```bash
     brew install --cask multipass
     ```
-3. Run `start.sh`
+3. Install qemu:
+    ```bash
+    brew install --cask qemu
+    ```
+4. Run `start.sh`
     ```bash
     ./start.sh
     ```
