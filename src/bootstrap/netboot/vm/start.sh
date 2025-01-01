@@ -34,9 +34,12 @@ fi
 
 # Set the default bridged network for created VMs
 NETWORK_NAME=$(multipass networks | grep -v 'switch' | awk 'NR > 1 {print $1}' | head -n 1)
+echo "Setting default bridged network to '$NETWORK_NAME'..."
 multipass set local.bridged-network="$NETWORK_NAME"
 
 # check if we need to create vm
+echo "checking for existing VM '$VM_NAME'..."
+multipass purge
 VM_EXISTS=$(multipass list | grep -q "^$VM_NAME\s" && echo true || echo false)
 if [ "$VM_REBUILD" = true ] || [ "$VM_EXISTS" = false ]; then
     if [ "$VM_REBUILD" = true ]; then
@@ -127,5 +130,5 @@ else
     exit 1
 fi
 
-sudo docker compose logs --follow --tail 100
+multipass exec $VM_NAME -- docker compose logs --follow --tail 100
 multipass shell $VM_NAME

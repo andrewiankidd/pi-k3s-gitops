@@ -10,7 +10,7 @@ lsb_release -a
 TFTP_SERVER="localhost"
 TFTP_DIR="/tftpboot"
 TFTP_MOUNT_POINT="/tmp"  # Mount point for TFTP
-TFTP_FSTAB_ENTRY="${TFTP_SERVER}:${TFTP_DIR} ${TFTP_MOUNT_POINT} tftp mode=udp,nolock 0 0"
+# TFTP_FSTAB_ENTRY="${TFTP_SERVER}:${TFTP_DIR} ${TFTP_MOUNT_POINT} tftp mode=udp,nolock 0 0"
 TEST_FILE="test.txt"
 
 # Install TFTP client
@@ -22,13 +22,13 @@ if [ ! -d "${TFTP_MOUNT_POINT}" ]; then
   sudo mkdir -p "${TFTP_MOUNT_POINT}"
 fi
 
-# Check if the entry already exists in /etc/fstab (this is purely for reference, as TFTP doesn't actually mount like NFS)
-if ! grep -q "${TFTP_SERVER}:${TFTP_DIR}" /etc/fstab; then
-  echo "Adding entry to /etc/fstab (for reference only)..."
-  echo "${TFTP_FSTAB_ENTRY}" | sudo tee -a /etc/fstab > /dev/null
-else
-  echo "Entry already exists in /etc/fstab."
-fi
+# # Check if the entry already exists in /etc/fstab (this is purely for reference, as TFTP doesn't actually mount like NFS)
+# if ! grep -q "${TFTP_SERVER}:${TFTP_DIR}" /etc/fstab; then
+#   echo "Adding entry to /etc/fstab (for reference only)..."
+#   echo "${TFTP_FSTAB_ENTRY}" | sudo tee -a /etc/fstab > /dev/null
+# else
+#   echo "Entry already exists in /etc/fstab."
+# fi
 
 # Use TFTP client to fetch a file as a test
 echo "Testing TFTP connection..."

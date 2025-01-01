@@ -38,6 +38,15 @@ if [ -d "/home/ubuntu/netboot" ]; then
 #   cd /home/ubuntu/pi-k3s-gitops/src/bootstrap/netboot
 fi
 
+# firewall
+sudo ufw allow 111/tcp
+sudo ufw allow 111/udp
+sudo ufw allow 2049/tcp
+sudo ufw allow 2049/udp
+sudo ufw allow 32765:32768/tcp
+sudo ufw allow 32765:32768/udp
+sudo ufw allow 69/tcp
+
 # go
 echo "running docker compose"
 sudo docker compose up --detach
