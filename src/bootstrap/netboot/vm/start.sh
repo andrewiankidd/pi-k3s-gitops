@@ -36,6 +36,10 @@ fi
 NETWORK_NAME=$(multipass networks | grep -v 'switch' | awk 'NR > 1 {print $1}' | head -n 1)
 echo "Setting default bridged network to '$NETWORK_NAME'..."
 multipass set local.bridged-network="$NETWORK_NAME"
+if [ $? -ne 0 ]; then
+    echo "Failed to set bridged network."
+    exit 1
+fi
 
 # check if we need to create vm
 echo "checking for existing VM '$VM_NAME'..."
