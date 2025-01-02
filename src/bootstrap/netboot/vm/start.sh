@@ -32,6 +32,15 @@ if ! command -v multipass &> /dev/null; then
     exit 1
 fi
 
+# source .env
+if [ -f "$PARENT_DIR/.env" ]; then
+    echo "Sourcing .env file..."
+    source "$PARENT_DIR/.env"
+else
+    echo "No .env file found."
+    ls -la $PARENT_DIR
+fi
+
 # Set the default bridged network for created VMs
 NETWORK_NAME=$(multipass networks | grep -v 'switch' | awk 'NR > 1 {print $1}' | head -n 1)
 echo "Setting default bridged network to '$NETWORK_NAME'..."
@@ -135,7 +144,10 @@ else
 fi
 
 # print docker logs
-multipass exec $VM_NAME -- docker compose logs --follow --tail 100
+multipass exec $VM_NAME -- docker compose --profile $COMPOSE_PROFILE logs --follow --tail 100
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+    echo "Failed to get docker logs inside the VM ($EXIT_CODE)"
+fi
 
-# drop into shell if above commands fail
 multipass shell $VM_NAME

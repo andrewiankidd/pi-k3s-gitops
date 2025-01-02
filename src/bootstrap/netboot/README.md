@@ -19,9 +19,8 @@ See [vm/README.md](vm/README.md)
 To run the services natively on your system, simply use Docker Compose:
 
 ```sh
-sudo docker compose up
+sudo docker compose --profile raspios up
 ```
-
 
 ## Directory Structure
 

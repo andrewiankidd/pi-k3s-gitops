@@ -8,6 +8,15 @@ uname -a
 lsb_release -a
 ip a
 
+# source .env
+if [ -f "./.env" ]; then
+    echo "Sourcing .env file..."
+    source "./.env"
+else
+    echo "No .env file found."
+    ls -la $PARENT_DIR
+fi
+
 # Enable support for additional binary formats
 sudo modprobe binfmt_misc
 sudo mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
@@ -49,7 +58,7 @@ sudo ufw allow 32765:32768/udp
 sudo ufw allow 69/tcp
 
 # go
-echo "running docker compose"
+echo "running: docker compose --profile $COMPOSE_PROFILE up --detach"
 sudo docker compose --profile $COMPOSE_PROFILE up --detach
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then
