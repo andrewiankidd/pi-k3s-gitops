@@ -1,43 +1,41 @@
 version: "2.1"
 services:
+  # TFTP server for hosting boot files
   pi-tftp:
     image: pghalliday/tftp
-    # depends_on:
-    #   - builder
     container_name: pi-tftp
     network_mode: host
+    profiles:
+      - nobuild
+      - raspios
+      - nixos
     volumes:
       - ./README.md:/var/tftpboot/test.txt:ro
       - netboot-boot-data:/var/tftpboot
+    ports:
+      - 69:69/udp
     healthcheck:
       test: ["CMD", "test", "-f", "/var/tftpboot/test.txt"]
       interval: 1m
       timeout: 5s
       retries: 0
       start_period: 1m
-    ports:
-      - 69:69/udp
     restart: unless-stopped
+
+  # NFS server for hosting the OS files
   pi-nfs:
     image: erichough/nfs-server
-    # depends_on:
-    #   - builder
     container_name: pi-nfs
-    #network_mode: host
     privileged: true
-    environment:
-      - NFS_VERSION=3
-      - NFS_EXPORT_0=/mnt/nfsshare *(rw,fsid=0,async,no_subtree_check,no_auth_nlm,insecure,no_root_squash)
-      - NFS_LOG_LEVEL=DEBUG
+    profiles:
+      - nobuild
+      - raspios
+      - nixos
+    env_file:
+      - .env
     volumes:
       - ./README.md:/mnt/nfsshare/test.txt:ro
       - netboot-os-data:/mnt/nfsshare
-    healthcheck:
-      test: ["CMD", "test", "-f", "/mnt/nfsshare/test.txt"]
-      interval: 1m
-      timeout: 5s
-      retries: 0
-      start_period: 1m
     ports:
       - 111:111
       - 111:111/udp
@@ -45,45 +43,40 @@ services:
       - 2049:2049/udp
       - 32765-32768:32765-32768
       - 32765-32768:32765-32768/udp
+    healthcheck:
+      test: ["CMD", "test", "-f", "/mnt/nfsshare/test.txt"]
+      interval: 1m
+      timeout: 5s
+      retries: 0
+      start_period: 1m
     restart: unless-stopped
-  # builder:
-  #   container_name: builder
-  #   build:
-  #     dockerfile: builder.Dockerfile
-  #     network: host
-  #   depends_on:
-  #     nixos-sd-image:
-  #       condition: service_healthy
-  #   privileged: true
-  #   environment:
-  #     # RaspiOS Min
-  #     # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2023-12-11/2023-12-11-raspios-bookworm-arm64-lite.img.xz
-  #     # RaspiOS
-  #     # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2023-12-06/2023-12-05-raspios-bookworm-arm64.img.xz
-  #     # RaspiOS Full
-  #     # - DOWNLOAD_LINK=https://downloads.raspberrypi.com/raspios_full_arm64/images/raspios_full_arm64-2023-12-06/2023-12-05-raspios-bookworm-arm64-full.img.xz
-  #     # NixOS
-  #     - DOWNLOAD_LINK=file://mnt/netboot/download/nixos-sd-image-24.05.20241006.ecbc1ca-aarch64-linux.img.zst
-  #     - CLEAN_BOOT_FILES=true
-  #     # - CLEAN_OS_FILES=true
-  #   volumes:
-  #     - .:/mnt/netboot
-  #     - netboot-boot-data:/mnt/netboot/boot
-  #     - netboot-os-data:/mnt/netboot/os
-  nixos-sd-image:
-    container_name: nixos-sd-image
-    image: nixos/nix:2.25.3
-    # platform: linux/arm64
-    # security_opt:
-    #   - seccomp=unconfined  # Disables seccomp profile
+
+  # Optional builder for creating RaspiOS structure files on the servers
+  raspios-builder:
+    container_name: raspios-builder
+    build:
+      dockerfile: raspios-builder.Dockerfile
+      network: host
     privileged: true
+    profiles:
+      - raspios
+    env_file:
+      - .env
+    volumes:
+      - .:/mnt/netboot
+      - netboot-boot-data:/mnt/netboot/boot
+      - netboot-os-data:/mnt/netboot/os
+
+  # Optional builder for creating NixOS structure on the servers
+  nixos-builder:
+    container_name: nixos-builder
+    image: nixos/nix:2.25.3
     command: bash /mnt/netboot/scripts/build-nix.sh
-    # healthcheck:
-    #   test: ["CMD", "test", "-f", "/mnt/netboot/.nix_ready"]
-    #   interval: 1m
-    #   timeout: 3s
-    #   retries: 30
-    #   start_period: 5m
+    privileged: true
+    profiles:
+      - nixos
+    env_file:
+      - .env
     volumes:
       - .:/mnt/netboot
       - netboot-boot-data:/mnt/netboot/boot

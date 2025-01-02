@@ -10,12 +10,12 @@ uname -a
 #############################
 
 # options
-VM_OS=22.04
-VM_NAME="ubuntu-vm"
-VM_CPUS=4
-VM_MEMORY="4G"
-VM_DISK="30G"
-VM_REBUILD=true
+VM_OS=${VM_OS:-"22.04"}
+VM_NAME=${VM_NAME:-"ubuntu-vm"}
+VM_CPUS=${VM_CPUS:-"4"}
+VM_MEMORY=${VM_MEMORY:-"4G"}
+VM_DISK=${VM_DISK:-"30G"}
+VM_REBUILD=${VM_REBUILD:-false}
 
 # Get the parent directory of the script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -134,5 +134,8 @@ else
     exit 1
 fi
 
+# print docker logs
 multipass exec $VM_NAME -- docker compose logs --follow --tail 100
+
+# drop into shell if above commands fail
 multipass shell $VM_NAME

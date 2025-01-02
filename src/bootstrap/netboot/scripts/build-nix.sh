@@ -14,8 +14,8 @@ echo "Enabling the binary cache"
 cachix use nix-community
 
 # Clone nix-community/raspberry-pi-nix repository
-REPO_URL="https://github.com/andrewiankidd/raspberry-pi-nix.git"
-REPO_BRANCH="feat/netboot"
+REPO_URL="${REPO_URL:-https://github.com/andrewiankidd/raspberry-pi-nix.git}"
+REPO_BRANCH="${REPO_BRANCH:-feat/netboot}"
 DIR_NAME="raspberry-pi-nix"
 echo "Cloning $REPO_URL into $DIR_NAME"
 if [ -d "$DIR_NAME" ]; then
@@ -51,8 +51,8 @@ nix-shell -p rsync --run "rsync -xarvv --inplace --progress result/net-image/nix
 # touch $LOCK_FILE
 # echo "Done!"
 
-# # Wait for the builder to complete (it will delete the lock file)
+# # Wait for the raspios-builder to complete (it will delete the lock file)
 # while [ -f $LOCK_FILE ]; do
-#     echo "Waiting for builder to complete..."
+#     echo "Waiting for raspios-builder to complete..."
 #     sleep 10
 # done

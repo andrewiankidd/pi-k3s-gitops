@@ -8,6 +8,7 @@ uname -a
 lsb_release -a
 ip a
 
+# Enable support for additional binary formats
 sudo modprobe binfmt_misc
 sudo mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
 
@@ -49,7 +50,7 @@ sudo ufw allow 69/tcp
 
 # go
 echo "running docker compose"
-sudo docker compose up --detach
+sudo docker compose --profile $COMPOSE_PROFILE up --detach
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then
     exit 1
