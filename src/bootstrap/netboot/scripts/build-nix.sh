@@ -1,6 +1,17 @@
 #!/bin/sh
 set -e
-uname -a
+
+#############################
+#        script params      #
+#############################
+
+REPO_URL="${REPO_URL:-https://github.com/andrewiankidd/raspberry-pi-nix.git}"
+REPO_BRANCH="${REPO_BRANCH:-feat/netboot}"
+DIR_NAME="raspberry-pi-nix"
+
+##############################
+#        script body         #
+##############################
 
 nix-channel --add https://nixos.org/channels/nixpkgs-unstable
 nix-channel --update
@@ -14,9 +25,6 @@ echo "Enabling the binary cache"
 cachix use nix-community
 
 # Clone nix-community/raspberry-pi-nix repository
-REPO_URL="${REPO_URL:-https://github.com/andrewiankidd/raspberry-pi-nix.git}"
-REPO_BRANCH="${REPO_BRANCH:-feat/netboot}"
-DIR_NAME="raspberry-pi-nix"
 echo "Cloning $REPO_URL into $DIR_NAME"
 if [ -d "$DIR_NAME" ]; then
     echo "$DIR_NAME already exists. Pulling latest changes..."
@@ -36,23 +44,8 @@ nix build --repair --option substitute true --option fallback false --system aar
 echo "Build complete."
 
 # export to volume
-echo "boot files"
-# ls -l result/net-image/boot
 echo "Copying netImage boot files to /mnt/netboot/boot/"
 nix-shell -p rsync --run "rsync -xarvv --inplace --progress result/net-image/boot/* /mnt/netboot/boot/"
 
-echo "os files"
-# ls -l result/net-image/os
 echo "Copying netImage os files to /mnt/netboot/os/"
 nix-shell -p rsync --run "rsync -xarvv --inplace --progress result/net-image/os/* /mnt/netboot/os/"
-
-# # mark as completed (container health check)
-# LOCK_FILE="/mnt/netboot/.nix_ready"
-# touch $LOCK_FILE
-# echo "Done!"
-
-# # Wait for the raspios-builder to complete (it will delete the lock file)
-# while [ -f $LOCK_FILE ]; do
-#     echo "Waiting for raspios-builder to complete..."
-#     sleep 10
-# done

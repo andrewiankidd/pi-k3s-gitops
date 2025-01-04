@@ -2,7 +2,7 @@
 set -e
 
 #############################
-#     environment params    #
+#        script params      #
 #############################
 
 CLEAN_BOOT_FILES=${CLEAN_BOOT_FILES:=""}
@@ -157,23 +157,7 @@ echo "Copying assets from '$ASSETS_DIRECTORY' to '$OS_EXPORT_DIRECTORY/$IMG_FILE
 find $ASSETS_DIRECTORY -type f -name "*.sh" -exec chmod +x {} +;
 rsync -xar --inplace --progress $ASSETS_DIRECTORY/ $OS_EXPORT_DIRECTORY/$IMG_FILENAME/
 
-# # Find all .service files in the specified directory
-# echo "Enabling services"
-# # mkdir -p /etc/systemd/system/multi-user.target.wants/
-# find "$OS_EXPORT_DIRECTORY/$IMG_FILENAME/etc/systemd/system" -type f -name '*.service' -exec bash -c '
-#     # Set permissions to 644
-#     echo "Marking service file $0 as executable"
-#     echo "chmod 644 "$0""
-#     #chmod 644 "$0"
-
-#     # Create a symlink in /etc/systemd/system/multi-user.target.wants/
-#     echo "Enabling Service via SymLink"
-#     echo "ln -sf \"$0\" \"/etc/systemd/system/multi-user.target.wants/$(basename \"$0\")\""
-#     ln -sf "$0" "/etc/systemd/system/multi-user.target.wants/$(basename "$0")"
-# ' {} \;
-
 # cleanup
-# [ -f /mnt/netboot/.nix_ready ] && rm /mnt/netboot/.nix_ready
 losetup -D
 
 # we're done 🎉

@@ -1,8 +1,8 @@
 # About
 
-This directory contains a Docker Compose project designed to run TFTP and NFS servers for the purpose of booting Raspberry Pi devices and other systems from the network. 
+This directory contains a Docker Compose project designed to run TFTP and NFS servers for the purpose of booting Raspberry Pi devices and other systems from the network.
 
-Additionally, it includes optional 'builder' services to generate the necessary files for a desired OS on these servers. 
+Additionally, it includes optional 'builder' services to generate the necessary files for a desired OS on these servers.
 
 ## Running
 **Warning: If you are using Windows, you must use a VM.**
@@ -27,7 +27,7 @@ sudo docker compose --profile raspios up
 - **assets/**: Files that will be copied to the server
   - **boot/**: Contains an OS configuration script `apply-config.sh` script and a configuration example file.
 - **scripts/**: Contains scripts for building and preparing images.
-  - `build-image.sh`: Script to download, extract, and prepare OS images for netboot.
+  - `build-raspios.sh`: Script to download, extract, and prepare OS images for netboot.
   - `build-nix.sh`: Script to build a NixOS image.
 - **vm/**: Contains scripts and configurations for setting up a virtual machine using Multipass.
   - `init/`: Initialization scripts for the VM.

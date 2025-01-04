@@ -127,7 +127,7 @@ selinux=0 dwc_otg.lpm_enable=0 console=tty1 rootwait rw nfsroot=192.168.0.108:/m
 
 No, you don't need to do it very often. Yes, this process is tedious. No it doesn't actually take much time/effort. Yes, I automated it anyway ⚡
 
-Within the pi-k3s-gitops repo, I've created a ['raspios-builder' Dockerfile](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/raspios-builder.Dockerfile), as well as a Bash script called [build-image.sh](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/scripts/build-image.sh) that tries to do all this automatically.
+Within the pi-k3s-gitops repo, I've created a ['raspios-builder' Dockerfile](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/raspios-builder.Dockerfile), as well as a Bash script called [build-raspios.sh](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/scripts/build-raspios.sh) that tries to do all this automatically.
 
 When I run `docker compose --profile raspios up` the raspios-builder is fired up. It will then download the image, extract it, mount and copy the files, patch `cmdline.txt` in the boot files and finally `/etc/fstab` in the OS files
 
