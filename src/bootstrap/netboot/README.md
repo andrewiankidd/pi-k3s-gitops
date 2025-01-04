@@ -24,8 +24,11 @@ sudo docker compose --profile raspios up
 
 ## Directory Structure
 
-- **assets/**: Files that will be copied to the server
-  - **boot/**: Contains an OS configuration script `apply-config.sh` script and a configuration example file.
+- **assets/**: Files that will be utilized during building of boot files
+  - **raspios/**: Used during `build-raspios.sh`
+    - Contains an RaspiOS configuration script (`apply-config.sh`) and example configuration file that is copied to the root filesystem on the NFS server.
+  - **nixos/**: Used during `build-nixos.sh`
+    - Contains a `default.nix` configuration file that is used during nix build.
 - **scripts/**: Contains scripts for building and preparing images.
   - `build-raspios.sh`: Script to download, extract, and prepare OS images for netboot.
   - `build-nix.sh`: Script to build a NixOS image.

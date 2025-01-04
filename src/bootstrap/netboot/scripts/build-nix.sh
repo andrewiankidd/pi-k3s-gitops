@@ -9,6 +9,17 @@ REPO_URL="${REPO_URL:-https://github.com/andrewiankidd/raspberry-pi-nix.git}"
 REPO_BRANCH="${REPO_BRANCH:-feat/netboot}"
 DIR_NAME="raspberry-pi-nix"
 
+#############################
+#        script vars        #
+#############################
+
+# build vars
+ASSETS_DIRECTORY=./assets/nixos
+
+# export vars
+BOOT_EXPORT_DIRECTORY=./boot
+OS_EXPORT_DIRECTORY=./os
+
 ##############################
 #        script body         #
 ##############################
@@ -36,16 +47,29 @@ else
     cd "$DIR_NAME"
 fi
 
+# copying assets
+echo "Copying assets from '$ASSETS_DIRECTORY' to '$OS_OUTPUT_DIR/'"
+NIX_CONFIG_DIR=result/net-image/os/*
+find $ASSETS_DIRECTORY -type f -name "*.sh" -exec chmod +x {} +;
+rsync -xar --inplace --progress $ASSETS_DIRECTORY/ $OS_OUTPUT_DIR/
+
 # Build the sd card image
 echo "Building netImage"
 NIX_DEBUG=1
 nix build --repair --option substitute true --option fallback false --system aarch64-linux --extra-experimental-features "nix-command flakes" '.#nixosConfigurations.rpi-net-example.config.system.build.netImage' --show-trace --print-build-logs -v
-
+OS_OUTPUT_DIR=result/net-image/os/*
+BOOT_OUTPUT_DIR=result/net-image/boot/*
 echo "Build complete."
 
-# export to volume
-echo "Copying netImage boot files to /mnt/netboot/boot/"
-nix-shell -p rsync --run "rsync -xarvv --inplace --progress result/net-image/boot/* /mnt/netboot/boot/"
+# # copying assets
+# echo "Copying assets from '$ASSETS_DIRECTORY' to '$OS_OUTPUT_DIR/'"
+# find $ASSETS_DIRECTORY -type f -name "*.sh" -exec chmod +x {} +;
+# rsync -xar --inplace --progress $ASSETS_DIRECTORY/ $OS_OUTPUT_DIR/
 
-echo "Copying netImage os files to /mnt/netboot/os/"
-nix-shell -p rsync --run "rsync -xarvv --inplace --progress result/net-image/os/* /mnt/netboot/os/"
+# export to volume
+echo "Copying netImage boot files to /mnt/netboot/$BOOT_EXPORT_DIRECTORY/"
+nix-shell -p rsync --run "rsync -xarvv --inplace --progress $BOOT_OUTPUT_DIR /mnt/netboot/$BOOT_EXPORT_DIRECTORY/"
+
+# export to volume
+echo "Copying netImage os files to /mnt/netboot/$OS_EXPORT_DIRECTORY/"
+nix-shell -p rsync --run "rsync -xarvv --inplace --progress $OS_OUTPUT_DIR /mnt/netboot/$OS_EXPORT_DIRECTORY/"

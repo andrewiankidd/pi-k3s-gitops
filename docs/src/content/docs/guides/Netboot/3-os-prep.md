@@ -99,7 +99,7 @@ To avoid this, make use of unattended setup. There are a few ways to do this:
 I'll be utilizing the first option here, by injecting a shell script into the boot process that then executes systemd as typically intended.
 
 #### Implementation
-The shell script (named [`apply-config.sh`](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/assets/boot/apply-config.sh) here), is a highly modified version of the `firstrun.sh` file created by the Raspberry Pi Imager and is added to the OS partitions boot directory alongside a `.config` file, which is used to provide configuration values to the script - [An example file is here](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/assets/boot/.config.example)
+The shell script (named [`apply-config.sh`](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/assets/raspios/boot/apply-config.sh) here), is a highly modified version of the `firstrun.sh` file created by the Raspberry Pi Imager and is added to the OS partitions boot directory alongside a `.config` file, which is used to provide configuration values to the script - [An example file is here](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/assets/raspios/boot/.config.example)
 
 I've made modifications to this script to do the following:
 1. Check if a `/boot/.config` file exists
@@ -108,7 +108,7 @@ I've made modifications to this script to do the following:
 
 So now all that is left is to copy the script and config file to to the OS boot directory:
 ```
-cp -v -r ./src/bootstrap/netboot/assets/* ./src/bootstrap/netboot/os/2023-12-11-raspios-bookworm-arm64-lite/
+cp -v -r ./src/bootstrap/netboot/assets/raspios/* ./src/bootstrap/netboot/os/2023-12-11-raspios-bookworm-arm64-lite/
 
 ```
 
