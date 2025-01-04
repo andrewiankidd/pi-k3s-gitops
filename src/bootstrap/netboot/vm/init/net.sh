@@ -13,6 +13,12 @@ GATEWAY="192.168.0.1"  # Replace with your gateway IP
 DNS="192.168.0.1"  # Replace with your DNS servers
 NETPLAN_CONFIG_PATH="/etc/netplan/99-static-ip.yaml"
 
+# Check if the interface already has the static IP
+if ip a show $INTERFACE | grep -q "$STATIC_IP"; then
+    echo "Interface $INTERFACE already has the static IP $STATIC_IP. Exiting."
+    exit 0
+fi
+
 # Create the new Netplan configuration file
 echo "Creating Netplan configuration file..."
 echo "network:
