@@ -50,3 +50,9 @@ The VM is managed by [multipass](https://multipass.run/docs), a cross-platform t
     ```bash
     ./start.sh
     ```
+
+## Issues
+If the VM gets in a bad state, or you're having issues with it, I recommend just removing it so you can recreate it:
+```
+multipass delete --purge *
+```

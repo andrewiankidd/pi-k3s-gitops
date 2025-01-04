@@ -2,8 +2,6 @@
   time.timeZone = "Europe/London";
   users.users.root.initialPassword = "root";
 
-
-
   # Enable rtkit for pipewire
   security.rtkit.enable = true;
 
@@ -27,7 +25,7 @@
   };
 
   networking = {
-    hostName = "pi-k3s-gitops-${builtins.hashString "sha256" "pi-k3s-gitops"}";
+    hostName = "pi-k3s-gitops-${builtins.substring 0 10 (builtins.hashString "sha256" "pi-k3s-gitops")}";
     useDHCP = false;
     interfaces = {
       wlan0.useDHCP = true;

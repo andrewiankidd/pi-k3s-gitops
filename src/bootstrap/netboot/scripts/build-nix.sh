@@ -13,8 +13,11 @@ DIR_NAME="raspberry-pi-nix"
 #        script vars        #
 #############################
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+
 # build vars
-ASSETS_DIRECTORY=./assets/nixos
+ASSETS_DIRECTORY=$SCRIPT_PARENT_DIR/assets/nixos
 
 # export vars
 BOOT_EXPORT_DIRECTORY=./boot
@@ -48,10 +51,9 @@ else
 fi
 
 # copying assets
-echo "Copying assets from '$ASSETS_DIRECTORY' to '$OS_OUTPUT_DIR/'"
-NIX_CONFIG_DIR=result/net-image/os/*
-find $ASSETS_DIRECTORY -type f -name "*.sh" -exec chmod +x {} +;
-rsync -xar --inplace --progress $ASSETS_DIRECTORY/ $OS_OUTPUT_DIR/
+NIX_CONFIG_DIR=./example/
+echo "Copying assets from '$ASSETS_DIRECTORY' to '$NIX_CONFIG_DIR/'"
+nix-shell -p rsync --run "rsync -xarvv --inplace --progress $ASSETS_DIRECTORY/ $NIX_CONFIG_DIR/"
 
 # Build the sd card image
 echo "Building netImage"
