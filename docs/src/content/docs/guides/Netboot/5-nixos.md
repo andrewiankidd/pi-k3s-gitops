@@ -132,11 +132,10 @@ Again, at this stage with RaspiOS we had to use custom bash scripts and filesyst
 
 With NixOS, we have already defined our system settings in [the aforementioned default example configuration file](https://github.com/andrewiankidd/raspberry-pi-nix/blob/master/example/default.nix)
 
-However, that doesn't mean you need to fork the repo to have your own settings
+However, that doesn't mean you need to fork the repo to have your own settings, I keep a set of custom `default.nix` files, which I can copy before running `nix-build`.
 
-I keep a set of custom `default.nix` files, which I can copy before running `nix-build`
+For example, say I want to have a different set of services for Pi's running from NFS, compared to Pi's running from SD, USB or NVME, I could simply copy the custom configuration, replacing the original before building:
 ```
-For example:
 NIX_DEBUG=1
 NIX_CONFIG_DIR=./example/
 SRC_CONFIG_DIR=assets/nixos/net
