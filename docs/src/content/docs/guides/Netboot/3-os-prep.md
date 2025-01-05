@@ -1,5 +1,5 @@
 ---
-title: Serving OS via Netboot
+title: Serving RaspiOS via Netboot
 description: Pi for dinner
 ---
 
@@ -135,6 +135,7 @@ When I run `docker compose --profile raspios up` the raspios-builder is fired up
 
 This has been very helpful for me in identifying the actual steps needed to do any of this, and a great help in updating my stored images, debugging or even just starting over from scratch.
 
+See [Bootstrap Automation](../../../reference/bootstrap-automation) for more information
 
 ## Next Steps
 

@@ -33,6 +33,7 @@ NIX_CONFIG_DIR=./example/
 #        script body         #
 ##############################
 
+# Add and update nix channels
 nix-channel --add https://nixos.org/channels/nixpkgs-unstable
 nix-channel --update
 

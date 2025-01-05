@@ -1,7 +1,114 @@
 { pkgs, lib, ... }: {
 
+  # System configuration
   time.timeZone = "Europe/London";
   users.users.root.initialPassword = "todo";
+
+  # ArgoCD Helm chart installation
+  environment.systemPackages = with pkgs; [
+    helm
+    openiscsi
+  ];
+
+  services = {
+    # Enable k3s
+    k3s = {
+      enable = true;
+      role = "agent";
+      token = "todo-pi-k3s-gitops";
+      serverAddr = "https://192.168.0.108:6443";
+      extraFlags = toString [
+        "--debug"
+      ];
+    };
+
+    # Enable open-iscsi service for Longhorn
+    openiscsi = {
+      enable = true;
+      # name = "<some-name>";
+    };
+
+    # enable pipewire for multimedia
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+  };
+
+  systemd = {
+    services = {
+
+      # If this device has an SD card, flash OS to SD card
+      # So long as there is at least one device with a flashed SD card
+      # the cluster can rebuild itself
+      detect-sd-and-flash-img = {
+        description = "SD card snapshot";
+        wantedBy = ["multi-user.target"];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStartPre = "${pkgs.bash}/bin/bash -c 'if ls /dev/mmcblk0 1> /dev/null 2>&1; then exit 0; else exit 1; fi'";
+          ExecStart = pkgs.writeScript "detect-sd-and-flash-img" ''
+            #!${pkgs.bash}/bin/bash
+            set -euo pipefail
+
+            # prepare pkgs paths
+            export PATH="${pkgs.zstd}/bin:${pkgs.unixtools.wall}/bin:$PATH"
+
+            # Flash the image and send output to the systemd journal
+            {
+              echo "detect-sd-and-flash-img | SD card detected. Flashing image..."
+              
+              # set expected path of sd image
+              SD_IMAGE_OUT_PATH=/boot/firmware/sd.img.zst
+              if [ ! -f $SD_IMAGE_OUT_PATH ]; then
+                echo "detect-sd-and-flash-img | SD image not found, skipping flash."
+                exit 0
+              fi
+
+              zstd -dc $SD_IMAGE_OUT_PATH | dd of=/dev/mmcblk0 bs=4M conv=fsync status=progress 2>&1 \
+                  | tee >(systemd-cat -t detect-sd-and-flash-img) | while IFS= read -r line; do
+                      wall "$line"
+                  done
+
+              echo "detect-sd-and-flash-img | Flashing complete."
+            } | tee >(systemd-cat -t detect-sd-and-flash-img) | wall
+          '';
+        };
+      };
+
+      # # If this device has an NVMe drive, add it to the Longhorn pool
+      # # User data will be stored on the pool and backed up remotely
+      # # This is the only persistent storage in the cluster
+      # detect-nvme-and-add-to-longhorn = {
+      #   description = "Detect NVMe and add to Longhorn pool";
+      #   wantedBy = [ "multi-user.target" ]; # This ensures the service runs after the system has booted
+      #   # Script that checks for NVMe and adds it to Longhorn
+      #   serviceConfig = {
+      #     Type = "oneshot";
+      #     ExecStartPre = "${pkgs.bash}/bin/bash -c 'if ls /dev/nvme0n1 1> /dev/null 2>&1; then exit 0; else exit 1; fi'";
+      #     ExecStart = pkgs.writeScript "detect-nvme-and-add-to-longhorn" ''
+      #       #!${pkgs.bash}/bin/bash
+      #       set -euo pipefail
+            
+      #       # prepare pkgs paths
+      #       export PATH="${pkgs.zstd}/bin:${pkgs.unixtools.wall}/bin:$PATH"
+
+      #       # add NVMe to Longhorn
+      #       {
+      #         echo "detect-nvme-and-add-to-longhorn | NVMe drive detected, adding to Longhorn pool"
+      #         longhorn volume create --name nvme-pool --size 100Gi /dev/nvme0n1
+      #         echo "detect-nvme-and-add-to-longhorn | NVMe drive added to Longhorn pool"
+      #       } | tee >(systemd-cat -t detect-sd-and-flash-img) | wall
+      #     '';
+      #   };
+      # };
+    };
+    tmpfiles.rules = [
+      "L+ /usr/local/bin - - - - /run/current-system/sw/bin/"
+    ];
+  };
 
   networking = {
     hostName = "pi-k3s-gitops-net-${builtins.substring 0 10 (builtins.hashString "sha256" "pi-k3s-gitops")}";
@@ -24,78 +131,10 @@
     };
   };
 
-  services = {
-    # Enable k3s
-    k3s = {
-      enable = true;
-      role = "agent";
-      token = "todo-pi-k3s-gitops";
-      serverAddr = "https://192.168.0.108:6443";
-      extraFlags = toString [
-        "--debug"
-      ];
-    };
-
-    # enable pipewire for multimedia
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
-  };
-
-  environment.systemPackages = with pkgs; [
-    unixtools.wall
-    zstd
-  ];
-
   # Enable rtkit for pipewire
   security = {
     rtkit = {
       enable = true;
-    };
-  };
-
-  # If this device has an SD card, flash OS to SD card
-  # So long as there is at least one device with a flashed SD card
-  # the cluster can rebuild itself
-  systemd = {
-    services = {
-      sd-flash = {
-        description = "SD card snapshot";
-        wantedBy = ["multi-user.target"];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStartPre = "${pkgs.bash}/bin/bash -c 'if ls /dev/mmcblk0 1> /dev/null 2>&1; then exit 0; else exit 1; fi'";
-          ExecStart = pkgs.writeScript "sd-flash" ''
-            #!${pkgs.bash}/bin/bash
-            set -euo pipefail
-
-            # prepare pkgs paths
-            export PATH="${pkgs.zstd}/bin:${pkgs.unixtools.wall}/bin:$PATH"
-
-            # set expected path of sd image
-
-            # Flash the image and send output to the systemd journal
-            {
-              SD_IMAGE_OUT_PATH=/boot/firmware/sd.img.zst
-
-              if [ ! -f $SD_IMAGE_OUT_PATH ]; then
-                echo "sd-flash | SD image not found, skipping flash."
-                exit 0
-              fi
-
-              echo "sd-flash | SD card detected. Flashing image..."
-              zstd -dc $SD_IMAGE_OUT_PATH | dd of=/dev/mmcblk0 bs=4M conv=fsync status=progress 2>&1 \
-                  | tee >(systemd-cat -t sd-flash) | while IFS= read -r line; do
-                      wall "$line"
-                  done
-              echo "sd-flash | Flashing complete."
-            } | tee >(systemd-cat -t sd-flash) | wall
-          '';
-        };
-      };
     };
   };
 

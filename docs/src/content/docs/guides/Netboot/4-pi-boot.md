@@ -67,6 +67,6 @@ And finally the OS init kicks in, and we are dropped at the login screen with ou
 
 ## Next Steps
 
-If you came here to learn more about booting a Raspberry Pi over the network, then I hope this helped.
+While I am happy to have been able to achieve this, coming from basically zero knowledge beforehand - I do not feel like it seems a very stable process.
 
-That requirement is now fulfilled, however for my needs there is much more to do 🤠
+So next, we'll take what we've learned and try something different...
