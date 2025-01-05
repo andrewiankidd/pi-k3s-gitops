@@ -42,7 +42,7 @@ sudo docker compose --profile raspios up
     - Contains `default.nix` configuration files that are used during nix build.
 - **scripts/**: Contains scripts for building and preparing images.
   - `build-raspios.sh`: Script to download, extract, and prepare OS images for netboot.
-  - `build-nix.sh`: Script to build a NixOS image.
+  - `build-nixos.sh`: Script to build a NixOS image.
 - **vm/**: Contains scripts and configurations for setting up a virtual machine using Multipass.
   - `init/`: Initialization scripts for the VM.
     - `docker.sh`: Installs Docker and Docker Compose, and sets up the environment.

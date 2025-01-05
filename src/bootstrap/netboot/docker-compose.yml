@@ -71,7 +71,7 @@ services:
   nixos-builder:
     container_name: nixos-builder
     image: nixos/nix:2.25.3
-    command: bash /mnt/netboot/scripts/build-nix.sh
+    command: bash /mnt/netboot/scripts/build-nixos.sh
     privileged: true
     profiles:
       - nixos
