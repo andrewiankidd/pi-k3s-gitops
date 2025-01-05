@@ -1,6 +1,6 @@
 ---
 title: About
-description: Master of muppets
+description: Master of Pippets
 ---
 
 This guide covers creation of a 'master' node for the cluster. The purpose of this node is to run all essential services needed to provision new nodes.
@@ -36,3 +36,15 @@ So now I can generate NixOS netboot images for the Pi with [`build-nix.sh`](../.
 
 # TODO readonly fs
 # TODO dependencies (k3s etc)
+
+# Node cost
+| Configuration               | Master | Slave | Cluster Storage  | Cost                   |
+|-----------------------------|--------|-------|------------------|------------------------|
+| Pi + SD + NVMe + PoE        |  ✅   |  ❌   |  ✅              | £80+£5+£15+£22 = £122 |
+| Pi + SD + NVMe              |  ✅   |  ❌   |  ✅              | £80+£5+£15 = £100     |
+| Pi + SD + PoE               |  ✅   |  ❌   |  ❌              | £80+£5+£22 = £107     |
+| Pi + SD                     |  ✅   |  ❌   |  ❌              | £80+£5 = £85          |
+| Pi + NVMe + PoE             |  ❌   |  ✅   |  ✅              | £80+£15+£22 = £117    |
+| Pi + NVMe                   |  ❌   |  ✅   |  ✅              | £80+£15 = £95         |
+| Pi + PoE                    |  ❌   |  ✅   |  ❌              | £80+£22 = £102        |
+| Pi                          |  ❌   |  ✅   |  ❌              | £80                   |

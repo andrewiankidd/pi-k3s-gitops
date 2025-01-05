@@ -52,7 +52,23 @@ The VM is managed by [multipass](https://multipass.run/docs), a cross-platform t
     ```
 
 ## Issues
+
+If a command fails, you can re-invoke it like:
+```
+source src\bootstrap\netboot\.env
+multipass exec $VM_NAME -- bash -c docker compose --profile $COMPOSE_PROFILE restart
+multipass exec $VM_NAME -- bash -c docker compose --profile $COMPOSE_PROFILE logs --tail 50 --follow
+multipass exec $VM_NAME -- sudo ls //var/lib/docker/volumes/netboot_netboot-os-data/_data/
+```
+
+Or drop into a shell for further debugging
+```
+source src\bootstrap\netboot\.env
+multipass $VM_NAME shell
+```
+
 If the VM gets in a bad state, or you're having issues with it, I recommend just removing it so you can recreate it:
 ```
-multipass delete --purge *
+source src\bootstrap\netboot\.env
+multipass delete --purge $VM_NAME
 ```

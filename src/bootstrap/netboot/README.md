@@ -4,6 +4,17 @@ This directory contains a Docker Compose project designed to run TFTP and NFS se
 
 Additionally, it includes optional 'builder' services to generate the necessary files for a desired OS on these servers.
 
+## Components
+The compose is made up of four containers with three different configurations
+
+| Container       | raspios | nixos  | nobuild |   ?   |
+|-----------------|---------|------- |---------|------|
+| TFTP Server     |   ✅   |   ✅   |   ✅   |   Used to host boot files for Pi   |
+| NFS Server      |   ✅   |   ✅   |   ✅   |   Used to host root filesystem for Pi   |
+| RaspiOS Builder |   ✅   |   ❌   |   ❌   |   Used to download, extract, patch and export a RaspiOS image onto the server volumes  |
+| NixOS Builder   |   ❌   |   ✅   |   ❌   |   Used to build NixOS for Pi and export filesystems to the server volumes   |
+
+
 ## Running
 **Warning: If you are using Windows, you must use a VM.**
 
@@ -28,7 +39,7 @@ sudo docker compose --profile raspios up
   - **raspios/**: Used during `build-raspios.sh`
     - Contains an RaspiOS configuration script (`apply-config.sh`) and example configuration file that is copied to the root filesystem on the NFS server.
   - **nixos/**: Used during `build-nixos.sh`
-    - Contains a `default.nix` configuration file that is used during nix build.
+    - Contains `default.nix` configuration files that are used during nix build.
 - **scripts/**: Contains scripts for building and preparing images.
   - `build-raspios.sh`: Script to download, extract, and prepare OS images for netboot.
   - `build-nix.sh`: Script to build a NixOS image.
