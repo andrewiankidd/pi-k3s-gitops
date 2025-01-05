@@ -117,3 +117,6 @@ if [ -d "$SRC_CONFIG_DIR" ]; then
         exit 1
     fi
 fi
+
+# we're done 🎉
+echo "Done!"
