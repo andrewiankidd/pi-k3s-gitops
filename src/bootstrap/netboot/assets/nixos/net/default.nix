@@ -23,7 +23,7 @@
     # Enable open-iscsi service for Longhorn
     openiscsi = {
       enable = true;
-      # name = "<some-name>";
+      name = "open-iscsi";
     };
 
     # enable pipewire for multimedia
