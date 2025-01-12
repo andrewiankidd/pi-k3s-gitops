@@ -4,7 +4,7 @@ description: TODO
 ---
 
 ## Node cost
-| Configuration               | Master | Slave | Cluster Storage  | Cost                   |
+| Configuration               | Master | Netboot | Cluster Storage  | Cost                   |
 |-----------------------------|--------|-------|------------------|------------------------|
 | Pi + SD + NVMe + PoE        |  ✅   |  ❌   |  ✅              | £80+£5+£15+£22 = £122 |
 | Pi + SD + NVMe              |  ✅   |  ❌   |  ✅              | £80+£5+£15 = £100     |

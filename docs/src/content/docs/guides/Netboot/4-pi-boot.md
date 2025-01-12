@@ -69,4 +69,6 @@ And finally the OS init kicks in, and we are dropped at the login screen with ou
 
 While I am happy to have been able to achieve this, coming from basically zero knowledge beforehand - I do not feel like it seems a very stable process.
 
+Hacking at the extracted filesystem feels like a good exploratory exercise, but isn't something I'd like to rely to work on long term.
+
 So next, we'll take what we've learned and try something different...

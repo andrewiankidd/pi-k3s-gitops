@@ -4,14 +4,12 @@
   time.timeZone = "Europe/London";
   users.users.root.initialPassword = "todo";
 
-  # ArgoCD Helm chart installation
   environment.systemPackages = with pkgs; [
     helm
     openiscsi
   ];
 
   services = {
-    # Enable k3s
     k3s = {
       enable = true;
       role = "agent";
@@ -37,10 +35,8 @@
     };
   };
 
-  # Install ArgoCD using Helm in Kubernetes cluster
   systemd = {
     services = {
-
       # ArgoCD Server for managing Kubernetes applications
       argo-cd = {
         description = "ArgoCD server";
@@ -66,14 +62,28 @@
     };
     firewall = {
       allowedTCPPorts = [
-        22    # SSH
-        6443  # Kubernetes API Server
+        # SSH
+        22
+
+        # Kubernetes API Server
+        6443
+
+        # NFSv3
+        111
+        2049
+        32765-32768
       ];
       allowedUDPPorts = [
-        53  # DNS
-        67  # DHCP
-        68  # DHCP
-        8472 # Flannel
+        # Flannel
+        8472
+
+        # TFTP
+        69
+
+        # NFSv3
+        111
+        2049
+        32765-32768
       ];
     };
   };

@@ -38,7 +38,7 @@ NixOS doesn't use a traditional filesystem so the `cmdline.txt` and `fstab` hack
 Instead for this we'll be using the [nix-community/raspberry-pi-nix](https://github.com/nix-community/raspberry-pi-nix) project, which allows you to generate pre-configured SD card images:
 > The primary goal of this flake is to make it easy to create working NixOS configurations for Raspberry Pi products.
 
-However, since this project aims at building SD images specifically, I have a [fork available that adds support building for netboot](https://github.com/andrewiankidd/raspberry-pi-nix/blob/master/net-image/net-image.nix).
+However, since this project aims at building SD images specifically, I have a [fork available that adds support for building for netboot](https://github.com/andrewiankidd/raspberry-pi-nix/blob/master/net-image/net-image.nix).
 
 ## Running
 :::tip[Requirement]
@@ -132,7 +132,8 @@ Again, at this stage with RaspiOS we had to use custom bash scripts and filesyst
 
 With NixOS, we have already defined our system settings in [the aforementioned default example configuration file](https://github.com/andrewiankidd/raspberry-pi-nix/blob/master/example/default.nix)
 
-However, that doesn't mean you need to fork the repo to have your own settings, I keep a set of custom `default.nix` files, which I can copy before running `nix-build`.
+However, that doesn't mean you need to fork the repo to have your own settings, I keep my custom `default.nix` file in this repo, which I can copy before running `nix-build`:
+ - [`src/bootstrap/netboot/assets/nixos/net/default.nix`](https://github.com/andrewiankidd/pi-k3s-gitops/blob/master/src/bootstrap/netboot/assets/nixos/net/default.nix)
 
 For example, say I want to have a different set of services for Pi's running from NFS, compared to Pi's running from SD, USB or NVME, I could simply copy the custom configuration, replacing the original before building:
 ```

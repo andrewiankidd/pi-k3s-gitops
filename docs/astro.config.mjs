@@ -5,7 +5,16 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
     site: 'https://andrewiankidd.github.io/pi-k3s-gitops',
 	base: '/pi-k3s-gitops',
-    server: { host: true},
+    server: {
+        host: true,
+    },
+    redirects: {
+        // match doesn't include base, but destination does
+        '/guides/netboot/0-index': {
+          status: 307,
+          destination: '/pi-k3s-gitops/guides/netboot/index',
+        },
+    },
     integrations: [
 		starlight({
 			title: 'pi-k3s-gitops',
@@ -13,6 +22,10 @@ export default defineConfig({
 				github: 'https://github.com/andrewiankidd/pi-k3s-gitops',
 			},
 			sidebar: [
+                {
+					label: 'About',
+					autogenerate: { directory: 'about' },
+				},
 				{
 					label: 'Guides',
                     items: [
