@@ -10,14 +10,39 @@
   ];
 
   services = {
+
+    # Enable Multi-Node k3s
     k3s = {
       enable = true;
-      role = "agent";
+      role = "server";
       token = "todo-pi-k3s-gitops";
+      clusterInit = true;
       serverAddr = "https://192.168.0.108:6443";
       extraFlags = toString [
         "--debug"
       ];
+    };
+
+    # Enable SSH login for root
+    openssh = {
+        enable = true;
+        ports = [
+            22
+        ];
+        settings = {
+            PasswordAuthentication = true;
+            AllowUsers = [
+                "root"
+            ];
+            UseDns = true;
+            X11Forwarding = false;
+            PermitRootLogin = "yes";
+        };
+    };
+
+    # Fail2ban is highly recommended as a base standard of security.
+    fail2ban = {
+        enable = true;
     };
 
     # Enable open-iscsi service for Longhorn

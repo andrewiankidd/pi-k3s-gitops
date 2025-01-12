@@ -9,15 +9,35 @@
     openiscsi
   ];
 
-  services = {
+    # Enable Multi-Node k3s
     k3s = {
       enable = true;
-      role = "agent";
+      role = "server";
       token = "todo-pi-k3s-gitops";
       serverAddr = "https://192.168.0.108:6443";
       extraFlags = toString [
         "--debug"
       ];
+    };# Enable SSH login for root
+    openssh = {
+        enable = true;
+        ports = [
+            22
+        ];
+        settings = {
+            PasswordAuthentication = true;
+            AllowUsers = [
+                "root"
+            ];
+            UseDns = true;
+            X11Forwarding = false;
+            PermitRootLogin = "yes";
+        };
+    };
+
+    # Fail2ban is highly recommended as a base standard of security.
+    fail2ban = {
+        enable = true;
     };
 
     # Enable open-iscsi service for Longhorn
@@ -75,6 +95,15 @@
         };
       };
 
+      # ArgoCD Server for managing Kubernetes applications
+      argo-cd = {
+        description = "ArgoCD server";
+        wantedBy = ["multi-user.target"];
+        serviceConfig = {
+          ExecStart = "${pkgs.helm}/bin/helm upgrade --install argo-cd argo/argo-cd";
+        };
+      };
+
       # # If this device has an NVMe drive, add it to the Longhorn pool
       # # User data will be stored on the pool and backed up remotely
       # # This is the only persistent storage in the cluster
@@ -102,6 +131,8 @@
       #   };
       # };
     };
+
+    # Fix for https://github.com/longhorn/longhorn/issues/2166
     tmpfiles.rules = [
       "L+ /usr/local/bin - - - - /run/current-system/sw/bin/"
     ];
