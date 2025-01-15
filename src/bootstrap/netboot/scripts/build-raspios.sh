@@ -6,6 +6,7 @@ set -e
 #############################
 
 CLEAN_BOOT_FILES=${CLEAN_BOOT_FILES:=""}
+CLEAN_OS_FILES=${CLEAN_OS_FILES:=""}
 DOWNLOAD_LINK=${DOWNLOAD_LINK:="https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2023-12-11/2023-12-11-raspios-bookworm-arm64-lite.img.xz"}
 
 #############################
