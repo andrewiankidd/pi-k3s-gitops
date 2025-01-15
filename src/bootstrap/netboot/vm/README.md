@@ -64,11 +64,10 @@ multipass exec $VM_NAME -- sudo ls //var/lib/docker/volumes/netboot_netboot-os-d
 Or drop into a shell for further debugging
 ```
 source src\bootstrap\netboot\.env
-multipass $VM_NAME shell
+multipass shell $VM_NAME
 ```
 
 If the VM gets in a bad state, or you're having issues with it, I recommend just removing it so you can recreate it:
 ```
-source src\bootstrap\netboot\.env
-multipass delete --purge $VM_NAME
+source src\bootstrap\netboot\.env && multipass delete $VM_NAME && multipass purge && src\bootstrap\netboot\vm\start.sh
 ```

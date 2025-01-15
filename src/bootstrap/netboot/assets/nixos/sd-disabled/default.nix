@@ -1,5 +1,24 @@
-{ pkgs, lib, ... }: {
+{ config, pkgs, ... }:
 
+let
+  # Define shared variables
+  k3sServerAddr = "https://192.168.0.108:6443";
+  k3sToken = "todo-pi-k3s-gitops";
+
+  # Run a command to check if the cluster exists
+  clusterStatus = pkgs.runCommand "check-k3s-cluster" {} ''
+    serverAddr="${k3sServerAddr}"
+    token="${k3sToken}"
+
+    # Check if the Kubernetes API is reachable
+    if curl -sfk -H "Authorization: Bearer $token" "$serverAddr/healthz" > /dev/null 2>&1; then
+      echo "exists" > $out
+    else
+      echo "not-exists" > $out
+    fi
+  '';
+in
+{
   # System configuration
   time.timeZone = "Europe/London";
   users.users.root.initialPassword = "todo";
@@ -13,14 +32,14 @@
 
     # Enable Multi-Node k3s
     k3s = {
-      enable = true;
-      role = "server";
-      token = "todo-pi-k3s-gitops";
-      clusterInit = true;
-      serverAddr = "https://192.168.0.108:6443";
-      extraFlags = toString [
-        "--debug"
-      ];
+        enable = true;
+        role = "server";
+        token = k3sToken;
+        clusterInit = builtins.readFile clusterStatus == "not-exists";
+        serverAddr = k3sServerAddr;
+        extraFlags = toString [
+            "--debug"
+        ];
     };
 
     # Enable SSH login for root

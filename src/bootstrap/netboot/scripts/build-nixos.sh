@@ -10,6 +10,9 @@ REPO_URL="${REPO_URL:-https://github.com/andrewiankidd/raspberry-pi-nix.git}"
 REPO_BRANCH="${REPO_BRANCH:-feat/netboot}"
 DIR_NAME="raspberry-pi-nix"
 
+CLEAN_BOOT_FILES=${CLEAN_BOOT_FILES:=""}
+CLEAN_OS_FILES=${CLEAN_OS_FILES:=""}
+
 #############################
 #        script vars        #
 #############################
@@ -64,9 +67,11 @@ ls -aR $NIX_CONFIG_DIR
 
 # Build the filesystems
 echo "Building netImage"
-nix-collect-garbage
-if [ -d ~/.cache ]; then
-    rm -rf ~/.cache
+if [ "$CLEAN_OS_FILES" = "true" ]; then
+    nix-collect-garbage
+    if [ -d ~/.cache ]; then
+        rm -rf ~/.cache
+    fi
 fi
 nix build --repair --option substitute true --option fallback false --system aarch64-linux --extra-experimental-features "nix-command flakes" '.#nixosConfigurations.rpi-net-example.config.system.build.netImage' --show-trace --print-build-logs -v
 OS_OUTPUT_DIR=result/net-image/os/
@@ -97,9 +102,11 @@ if [ -d "$SRC_CONFIG_DIR" ]; then
 
     # Build the sd card image
     echo "Building sdImage"
-    nix-collect-garbage
-    if [ -d ~/.cache ]; then
-        rm -rf ~/.cache
+    if [ "$CLEAN_OS_FILES" = "true" ]; then
+        nix-collect-garbage
+        if [ -d ~/.cache ]; then
+            rm -rf ~/.cache
+        fi
     fi
     nix build --repair --option substitute true --option fallback false --system aarch64-linux --extra-experimental-features "nix-command flakes" '.#nixosConfigurations.rpi-example.config.system.build.sdImage' --show-trace --print-build-logs -v
     SD_OUTPUT_DIR=result/sd-image

@@ -1,5 +1,11 @@
-{ pkgs, lib, ... }: {
+{ config, pkgs, ... }:
 
+let
+  # Define shared variables
+  k3sServerAddr = "https://192.168.0.108:6443";
+  k3sToken = "todo-pi-k3s-gitops";
+in
+{
   # System configuration
   time.timeZone = "Europe/London";
   users.users.root.initialPassword = "todo";
@@ -9,35 +15,80 @@
     openiscsi
   ];
 
+  services = {
+
     # Enable Multi-Node k3s
-    k3s = {
+    k3s =
+      let
+        nginxChart =
+          pkgs.runCommand "nginx-chart"
+            {
+              nativeBuildInputs = with pkgs; [
+                kubernetes-helm
+                cacert
+              ];
+              outputHashAlgo = "sha256";
+              outputHash = "sha256-e4zlCaK9mioU9A0Wr2YqCxwzlnS+ssPG46ixvFVXOqk=";
+            }
+            ''
+              export HOME="$PWD"
+
+              helm repo add repository https://charts.bitnami.com/bitnami
+              helm pull repository/nginx --version 18.3.5
+              mv ./*.tgz $out
+            '';
+      in
+      {
       enable = true;
       role = "server";
-      token = "todo-pi-k3s-gitops";
-      serverAddr = "https://192.168.0.108:6443";
+      environmentFile = "/etc/k3s/cluster-config.env";
       extraFlags = toString [
         "--debug"
       ];
-    };# Enable SSH login for root
-    openssh = {
-        enable = true;
-        ports = [
-            22
-        ];
-        settings = {
-            PasswordAuthentication = true;
-            AllowUsers = [
-                "root"
-            ];
-            UseDns = true;
-            X11Forwarding = false;
-            PermitRootLogin = "yes";
+      charts.bitnamiNginx = nginxChart;
+      manifests.nginx.content = {
+        apiVersion = "helm.cattle.io/v1";
+        kind = "HelmChart";
+        metadata = {
+          name = "nginx";
+          namespace = "kube-system";
         };
+        spec = {
+          targetNamespace = "test";
+          createNamespace = true;
+          # the chart name (bitnamiNginx) has to match the key that is used in services.k3s.charts
+          chart = "https://%{KUBERNETES_API}%/static/charts/bitnamiNginx.tgz";
+          valuesContent = ''
+            replicaCount: 3
+            tls:
+              enabled: false
+            metrics:
+              enabled: true
+          '';
+        };
+      };
+    };
+
+    # Enable SSH login for root
+    openssh = {
+      enable = true;
+      ports = [
+        22
+      ];
+      settings = {
+        PasswordAuthentication = true;
+        AllowUsers = [
+          "root"
+        ];
+        UseDns = true;
+        X11Forwarding = false;
+        PermitRootLogin = "yes";
+      };
     };
 
     # Fail2ban is highly recommended as a base standard of security.
     fail2ban = {
-        enable = true;
+      enable = true;
     };
 
     # Enable open-iscsi service for Longhorn
@@ -57,6 +108,7 @@
 
   systemd = {
     services = {
+
       # If this device has an SD card, flash OS to SD card
       # So long as there is at least one device with a flashed SD card
       # the cluster can rebuild itself
@@ -91,6 +143,33 @@
 
               echo "detect-sd-and-flash-img | Flashing complete."
             } | tee >(systemd-cat -t detect-sd-and-flash-img) | wall
+          '';
+        };
+      };
+
+      k3s-check-cluster = {
+        description = "Check K3s cluster state and configure K3s";
+        wantedBy = [ "multi-user.target" ];
+        before = [ "k3s.service" ]; # Ensure this runs before K3s starts
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStartPre = "${pkgs.bash}/bin/bash -c 'mkdir -p /etc/k3s'";
+          ExecStart = pkgs.writeScript "k3s-check-cluster" ''
+            #!${pkgs.bash}/bin/bash
+            set -euo pipefail
+
+            # output file
+            configFile="/etc/k3s/cluster-config.env"
+            echo "K3S_URL=${k3sServerAddr}" >> "$configFile"
+            echo "K3S_TOKEN=${k3sToken}" >> "$configFile"
+
+            # Check if the cluster has already initialized on another node
+            if curl -sfk -H "Authorization: Bearer ${k3sToken}" "${k3sServerAddr}/healthz" > /dev/null 2>&1; then
+                echo "K3S_CLUSTER_INIT=false" > "$configFile"
+            else
+                echo "K3S_CLUSTER_INIT=true" > "$configFile"
+            fi
           '';
         };
       };
