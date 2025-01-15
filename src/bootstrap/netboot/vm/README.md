@@ -56,9 +56,9 @@ The VM is managed by [multipass](https://multipass.run/docs), a cross-platform t
 If a command fails, you can re-invoke it like:
 ```
 source src\bootstrap\netboot\.env
-multipass exec $VM_NAME -- bash -c docker compose --profile $COMPOSE_PROFILE restart
-multipass exec $VM_NAME -- bash -c docker compose --profile $COMPOSE_PROFILE logs --tail 50 --follow
-multipass exec $VM_NAME -- sudo ls //var/lib/docker/volumes/netboot_netboot-os-data/_data/
+multipass exec $VM_NAME --working-directory //home/ubuntu/netboot -- bash -c docker compose --profile $COMPOSE_PROFILE restart
+multipass exec $VM_NAME --working-directory //home/ubuntu/netboot -- bash -c docker compose --profile $COMPOSE_PROFILE logs --tail 50 --follow
+multipass exec $VM_NAME --working-directory //home/ubuntu/netboot -- sudo ls //var/lib/docker/volumes/netboot_netboot-os-data/_data/
 ```
 
 Or drop into a shell for further debugging

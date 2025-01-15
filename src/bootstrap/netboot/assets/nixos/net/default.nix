@@ -13,6 +13,9 @@ in
   environment.systemPackages = with pkgs; [
     helm
     openiscsi
+    fuse-overlayfs
+    fuse3
+    nfs-utils
   ];
 
   services = {
@@ -43,6 +46,10 @@ in
       role = "server";
       environmentFile = "/etc/k3s/cluster-config.env";
       extraFlags = toString [
+        "--snapshotter=fuse-overlayfs"
+        "--etcd-snapshot-schedule-cron=0"
+        "--etcd-disable-snapshots"
+        "--datastore-endpoint=sqlite:///var/lib/rancher/k3s/k3s.db"
         "--debug"
       ];
       charts.bitnamiNginx = nginxChart;
@@ -94,7 +101,7 @@ in
     # Enable open-iscsi service for Longhorn
     openiscsi = {
       enable = true;
-      name = "open-iscsi";
+      name = "${config.networking.hostName}-initiatorhost";
     };
 
     # enable pipewire for multimedia
@@ -104,10 +111,19 @@ in
       alsa.support32Bit = true;
       pulse.enable = true;
     };
+
+    rpcbind = {
+      enable = true;
+    };
   };
 
   systemd = {
     services = {
+
+      k3s.path = [
+        pkgs.fuse-overlayfs
+        pkgs.fuse3
+      ];
 
       # If this device has an SD card, flash OS to SD card
       # So long as there is at least one device with a flashed SD card
@@ -163,6 +179,7 @@ in
             configFile="/etc/k3s/cluster-config.env"
             echo "K3S_URL=${k3sServerAddr}" >> "$configFile"
             echo "K3S_TOKEN=${k3sToken}" >> "$configFile"
+            echo "PATH=${pkgs.fuse-overlayfs}/bin:/run/current-system/sw/bin:$PATH" >> "$configFile"
 
             # Check if the cluster has already initialized on another node
             if curl -sfk -H "Authorization: Bearer ${k3sToken}" "${k3sServerAddr}/healthz" > /dev/null 2>&1; then
