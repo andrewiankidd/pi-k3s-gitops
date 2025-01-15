@@ -23,21 +23,21 @@ in
     # Enable Multi-Node k3s
     k3s =
       let
-        nginxChart =
-          pkgs.runCommand "nginx-chart"
+        argocdChart =
+          pkgs.runCommand "argocd-chart"
             {
               nativeBuildInputs = with pkgs; [
                 kubernetes-helm
                 cacert
               ];
               outputHashAlgo = "sha256";
-              outputHash = "sha256-e4zlCaK9mioU9A0Wr2YqCxwzlnS+ssPG46ixvFVXOqk=";
+              outputHash = "sha256-156376281f14ab90c6684febef5889ea7ef221e241e73604ab33dfd39b23cf31";
             }
             ''
               export HOME="$PWD"
 
               helm repo add repository https://charts.bitnami.com/bitnami
-              helm pull repository/nginx --version 18.3.5
+              helm pull repository/argo-cd --version 7.7.16
               mv ./*.tgz $out
             '';
       in
@@ -52,25 +52,65 @@ in
         "--datastore-endpoint=sqlite:///var/lib/rancher/k3s/k3s.db"
         "--debug"
       ];
-      charts.bitnamiNginx = nginxChart;
-      manifests.nginx.content = {
+      charts.bitnamiArgoCD = argocdChart;
+      manifests.argocd.content = {
         apiVersion = "helm.cattle.io/v1";
         kind = "HelmChart";
         metadata = {
-          name = "nginx";
+          name = "argocd";
           namespace = "kube-system";
         };
         spec = {
-          targetNamespace = "test";
+          targetNamespace = "argocd";
           createNamespace = true;
-          # the chart name (bitnamiNginx) has to match the key that is used in services.k3s.charts
-          chart = "https://%{KUBERNETES_API}%/static/charts/bitnamiNginx.tgz";
+          chart = "https://%{KUBERNETES_API}%/static/charts/bitnamiArgoCD.tgz";
           valuesContent = ''
-            replicaCount: 3
-            tls:
-              enabled: false
-            metrics:
-              enabled: true
+            server:
+              autoscaling:
+                enabled: true
+                minReplicas: 2
+              extraArgs:
+                - --insecure
+
+            repoServer:
+              autoscaling:
+                enabled: true
+                minReplicas: 2
+
+            applicationSet:
+              replicas: 2
+
+            applications:
+              - name: quendi
+                namespace: argocd
+                project: default
+                destination:
+                  namespace: argocd
+                  server: https://kubernetes.default.svc
+                source:
+                  repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
+                  targetRevision: feature/master-node
+                  path: src/kubernetes/quendi
+              - name: atani
+                namespace: argocd
+                project: default
+                destination:
+                  namespace: argocd
+                  server: https://kubernetes.default.svc
+                source:
+                  repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
+                  targetRevision: feature/master-node
+                  path: src/kubernetes/atani
+              - name: perian
+                namespace: argocd
+                project: default
+                destination:
+                  namespace: argocd
+                  server: https://kubernetes.default.svc
+                source:
+                  repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
+                  targetRevision: feature/master-node
+                  path: src/kubernetes/perian
           '';
         };
       };
@@ -185,15 +225,6 @@ in
                 echo "K3S_CLUSTER_INIT=true" > "$configFile"
             fi
           '';
-        };
-      };
-
-      # ArgoCD Server for managing Kubernetes applications
-      argo-cd = {
-        description = "ArgoCD server";
-        wantedBy = ["multi-user.target"];
-        serviceConfig = {
-          ExecStart = "${pkgs.helm}/bin/helm upgrade --install argo-cd argo/argo-cd";
         };
       };
 
