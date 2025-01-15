@@ -110,16 +110,13 @@ in
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
-    };
-
-    rpcbind = {
-      enable = true;
-    };
+    }
   };
 
   systemd = {
     services = {
 
+      # append to k3s PATH
       k3s.path = [
         pkgs.fuse-overlayfs
         pkgs.fuse3
