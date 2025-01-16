@@ -121,13 +121,18 @@ in
           name = "argocd";
           namespace = "argocd";
           annotations = {
-            "traefik.ingress.kubernetes.io/router.entrypoints" = "web";
+            "nginx.ingress.kubernetes.io/limit-rps" = "5";
+            "nginx.ingress.kubernetes.io/limit-rpm" = "100";
+            "nginx.ingress.kubernetes.io/ssl-redirect" = "false";
+            "traefik.ingress.kubernetes.io/router.tls" = "false";
+            "kubernetes.io/ingress.class" = "traefik";
           };
         };
         spec = {
+          ingressClassName = "traefik";
           rules = [
             {
-              host = "192.168.0.243";  # TODO
+              host = "192.168.0.243";  # TODO iluvatar.kidd.network
               http = {
                 paths = [
                   {
@@ -135,19 +140,20 @@ in
                     pathType = "Prefix";
                     backend = {
                       service = {
-                        name = "argocd-server";
+                        name = "argocd-argo-cd-server";
                         port = {
                           number = 80;
                         };
                       };
                     };
-                  };
+                  }
                 ];
               };
-            };
+            }
           ];
         };
       };
+    };
 
     # Enable SSH login for root
     openssh = {
