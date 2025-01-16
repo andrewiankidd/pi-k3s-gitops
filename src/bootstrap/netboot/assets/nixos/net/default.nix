@@ -67,18 +67,18 @@ in
           valuesContent = ''
             server:
               autoscaling:
-                enabled: true
-                minReplicas: 2
+                enabled: false
+                minReplicas: 1
               extraArgs:
                 - --insecure
 
             repoServer:
               autoscaling:
                 enabled: true
-                minReplicas: 2
+                minReplicas: 1
 
             applicationSet:
-              replicas: 2
+              replicas: 1
 
             applications:
               - name: quendi
@@ -114,7 +114,40 @@ in
           '';
         };
       };
-    };
+      manifests.argocd-ingress.content = {
+        apiVersion = "networking.k8s.io/v1";
+        kind = "Ingress";
+        metadata = {
+          name = "argocd";
+          namespace = "argocd";
+          annotations = {
+            "traefik.ingress.kubernetes.io/router.entrypoints" = "web";
+          };
+        };
+        spec = {
+          rules = [
+            {
+              host = "192.168.0.243";  # TODO
+              http = {
+                paths = [
+                  {
+                    path = "/";
+                    pathType = "Prefix";
+                    backend = {
+                      service = {
+                        name = "argocd-server";
+                        port = {
+                          number = 80;
+                        };
+                      };
+                    };
+                  };
+                ];
+              };
+            };
+          ];
+        };
+      };
 
     # Enable SSH login for root
     openssh = {
