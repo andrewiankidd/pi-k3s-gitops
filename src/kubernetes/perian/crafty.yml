@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crafty-app
+  namespace: argocd  # Specify the namespace where Argo CD is installed
+spec:
+  project: default
+  source:
+    repoURL: oci://tccr.io/truecharts/crafty-4  # OCI repository URL for the Helm chart
+    targetRevision: latest  # This will deploy the latest version of the chart
+    chart: crafty-4  # The chart name
+    helm:
+      values: |  # Use default values from the chart
+        # Here you can override the default values if needed
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crafty  # Namespace where the app will be deployed
+  syncPolicy:
+    automated:
+      prune: true  # Automatically remove resources that are no longer part of the application
+      selfHeal: true  # Automatically sync and heal the app if resources go out of sync

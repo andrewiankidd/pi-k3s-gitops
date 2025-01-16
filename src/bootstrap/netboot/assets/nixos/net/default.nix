@@ -30,14 +30,14 @@ in
                 kubernetes-helm
                 cacert
               ];
-              outputHashAlgo = "sha256";
-              outputHash = "sha256-156376281f14ab90c6684febef5889ea7ef221e241e73604ab33dfd39b23cf31";
+              # outputHashAlgo = "sha256";
+              # outputHash = "sha256-156376281f14ab90c6684febef5889ea7ef221e241e73604ab33dfd39b23cf31";
             }
             ''
               export HOME="$PWD"
 
               helm repo add repository https://charts.bitnami.com/bitnami
-              helm pull repository/argo-cd --version 7.7.16
+              helm pull repository/argo-cd --version 7.1.3
               mv ./*.tgz $out
             '';
       in
@@ -150,7 +150,7 @@ in
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
-    }
+    };
   };
 
   systemd = {

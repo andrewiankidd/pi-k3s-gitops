@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mineos
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mineos
+  template:
+    metadata:
+      labels:
+        app: mineos
+    spec:
+      containers:
+        - name: mineos
+          image: hexparrot/mineos:latest  # Replace with your Docker image
+          ports:
+            - containerPort: 80

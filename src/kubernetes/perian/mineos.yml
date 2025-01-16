@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mineos
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/andrewiankidd/pi-k3s-gitops
+    targetRevision: feature/master-node
+    path: src/kubernetes/perian/manifests/mineos
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mineos
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

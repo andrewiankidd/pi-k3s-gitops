@@ -14,16 +14,14 @@ It's a kubernetes cluster as a home server
 |------------------------|--------------|-------------------------------------------------|
 | **Project**            | Ilúvatar     | Creator and orchestrator of everything          |
 | **Cluster**            | Eä           | The world of existence                          |
-| **Nodes**              | Ainur        | The spiritual beings governing existence        |
-| **Master Nodes**       | Valar        | The rulers and shapers of the world             |
-| **Worker Nodes**       | Maiar        | Lesser beings serving the Valar                 |
+| **Nodes**              | Ainur        | The beings governing existence                  |
+| **Primary Nodes**      | Valar        | The rulers and shapers of the world             |
+| **Secondary Nodes**    | Maiar        | Lesser nodes serving the Valar                  |
 | **Critical workloads** | Quendi       | The foundational apps                           |
 | **Regular Workloads**  | Atani        | Non-critical, nice to have apps                 |
 | **Other Workloads**    | Perian       | Apps that are just kinda doing their own thing  |
 
-
 ## Software
-
 
 My primary concern with having multiple physical nodes is managing them, for example
  - Keeping them updated
@@ -56,6 +54,10 @@ I have been using Argo products professionally for a few years now and really ju
 ## Headlamp
 
 Kubernetes dashboard
+
+## Longhorn
+
+Kubernetes distributed storage
 
 ## Hardware
 
