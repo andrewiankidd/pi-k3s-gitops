@@ -23,6 +23,8 @@ in
     # Enable Multi-Node k3s
     k3s =
       let
+
+        # https://artifacthub.io/packages/helm/argo/argo-cd
         argocdChart =
           pkgs.runCommand "argocd-chart"
             {
@@ -36,8 +38,27 @@ in
             ''
               export HOME="$PWD"
 
-              helm repo add repository https://charts.bitnami.com/bitnami
-              helm pull repository/argo-cd --version 7.1.3
+              helm repo add repository https://argoproj.github.io/argo-helm
+              helm pull repository/argo-cd --version 7.7.16
+              mv ./*.tgz $out
+            '';
+
+        # https://artifacthub.io/packages/helm/argo/argocd-apps
+        argocdappsChart =
+          pkgs.runCommand "argocdapps-chart"
+            {
+              nativeBuildInputs = with pkgs; [
+                kubernetes-helm
+                cacert
+              ];
+              # outputHashAlgo = "sha256";
+              # outputHash = "sha256-156376281f14ab90c6684febef5889ea7ef221e241e73604ab33dfd39b23cf31";
+            }
+            ''
+              export HOME="$PWD"
+
+              helm repo add repository https://argoproj.github.io/argo-helm
+              helm pull repository/argocd-apps --version 2.0.2
               mv ./*.tgz $out
             '';
       in
@@ -52,7 +73,7 @@ in
         "--datastore-endpoint=sqlite:///var/lib/rancher/k3s/k3s.db"
         "--debug"
       ];
-      charts.bitnamiArgoCD = argocdChart;
+      charts.ArgoCD = argocdChart;
       manifests.argocd.content = {
         apiVersion = "helm.cattle.io/v1";
         kind = "HelmChart";
@@ -63,7 +84,7 @@ in
         spec = {
           targetNamespace = "argocd";
           createNamespace = true;
-          chart = "https://%{KUBERNETES_API}%/static/charts/bitnamiArgoCD.tgz";
+          chart = "https://%{KUBERNETES_API}%/static/charts/ArgoCD.tgz";
           valuesContent = ''
             server:
               autoscaling:
@@ -79,38 +100,150 @@ in
 
             applicationSet:
               replicas: 1
-
+          '';
+        };
+      };
+      charts.ArgoCDApps = argocdappsChart;
+      manifests.argocd-apps.content = {
+        apiVersion = "helm.cattle.io/v1";
+        kind = "HelmChart";
+        metadata = {
+          name = "argocd-apps";
+          namespace = "kube-system";
+        };
+        spec = {
+          targetNamespace = "argocd";
+          createNamespace = true;
+          chart = "https://%{KUBERNETES_API}%/static/charts/ArgoCDApps.tgz";
+          valuesContent = ''
             applications:
-              - name: quendi
+              quendi:
                 namespace: argocd
-                project: default
-                destination:
-                  namespace: argocd
-                  server: https://kubernetes.default.svc
-                source:
-                  repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
-                  targetRevision: feature/master-node
+                finalizers:
+                - resources-finalizer.argocd.argoproj.io
+                project: "quendi"
+                sources:
+                - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
                   path: src/kubernetes/quendi
-              - name: atani
-                namespace: argocd
-                project: default
-                destination:
-                  namespace: argocd
-                  server: https://kubernetes.default.svc
-                source:
-                  repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
                   targetRevision: feature/master-node
+                destination:
+                  server: https://kubernetes.default.svc
+                  namespace: quendi
+                syncPolicy:
+                  automated:
+                    prune: false
+                    selfHeal: false
+                  syncOptions:
+                  - CreateNamespace=true
+              atani:
+                namespace: argocd
+                finalizers:
+                - resources-finalizer.argocd.argoproj.io
+                project: "atani"
+                sources:
+                - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
                   path: src/kubernetes/atani
-              - name: perian
-                namespace: argocd
-                project: default
-                destination:
-                  namespace: argocd
-                  server: https://kubernetes.default.svc
-                source:
-                  repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
                   targetRevision: feature/master-node
+                destination:
+                  server: https://kubernetes.default.svc
+                  namespace: atani
+                syncPolicy:
+                  automated:
+                    prune: false
+                    selfHeal: false
+                  syncOptions:
+                  - CreateNamespace=true
+              perian:
+                namespace: argocd
+                finalizers:
+                - resources-finalizer.argocd.argoproj.io
+                project: "perian"
+                sources:
+                - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
                   path: src/kubernetes/perian
+                  targetRevision: feature/master-node
+                destination:
+                  server: https://kubernetes.default.svc
+                  namespace: perian
+                syncPolicy:
+                  automated:
+                    prune: false
+                    selfHeal: false
+                  syncOptions:
+                  - CreateNamespace=true
+
+            projects:
+              quendi:
+                namespace: argocd
+                description: "Project for managing Quendi applications"
+                sourceRepos:
+                  - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                destinations:
+                  - namespace: quendi
+                    server: "https://kubernetes.default.svc"
+                clusterResourceWhitelist:
+                  - group: "*"
+                    kind: "*"
+                namespaceResourceBlacklist:
+                  - group: ""
+                    kind: "Secret"
+                orphanedResources:
+                  warn: true
+                roles:
+                  - name: quendi-admin
+                    description: "Admin role for Quendi project"
+                    policies:
+                      - "p, proj:quendi:quendi-admin, applications, *, quendi/*, allow"
+                    groups:
+                      - "quendi-admin-group"
+
+              atani:
+                namespace: argocd
+                description: "Project for managing Atani applications"
+                sourceRepos:
+                  - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                destinations:
+                  - namespace: atani
+                    server: "https://kubernetes.default.svc"
+                clusterResourceWhitelist:
+                  - group: "*"
+                    kind: "*"
+                namespaceResourceBlacklist:
+                  - group: ""
+                    kind: "Secret"
+                orphanedResources:
+                  warn: true
+                roles:
+                  - name: atani-admin
+                    description: "Admin role for Atani project"
+                    policies:
+                      - "p, proj:atani:atani-admin, applications, *, atani/*, allow"
+                    groups:
+                      - "atani-admin-group"
+
+              perian:
+                namespace: argocd
+                description: "Project for managing Perian applications"
+                sourceRepos:
+                  - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                destinations:
+                  - namespace: perian
+                    server: "https://kubernetes.default.svc"
+                clusterResourceWhitelist:
+                  - group: "*"
+                    kind: "*"
+                namespaceResourceBlacklist:
+                  - group: ""
+                    kind: "Secret"
+                orphanedResources:
+                  warn: true
+                roles:
+                  - name: perian-admin
+                    description: "Admin role for Perian project"
+                    policies:
+                      - "p, proj:perian:perian-admin, applications, *, perian/*, allow"
+                    groups:
+                      - "perian-admin-group"
           '';
         };
       };
@@ -132,15 +265,15 @@ in
           ingressClassName = "traefik";
           rules = [
             {
-              host = "iluvatar.kidd.network";
+              host = "argocd.kidd.network";
               http = {
                 paths = [
                   {
-                    path = "/argocd";
+                    path = "/";
                     pathType = "Prefix";
                     backend = {
                       service = {
-                        name = "argocd-argo-cd-server";
+                        name = "argocd-server";
                         port = {
                           number = 80;
                         };
@@ -154,6 +287,23 @@ in
         };
       };
     };
+
+    # TODO
+    # cloudflared = {
+    #   enable = true;
+    #   tunnels = {
+    #     "00000000-0000-0000-0000-000000000000" = {
+    #       credentialsFile = "${config.sops.secrets.cloudflared-creds.path}";
+    #       ingress = {
+    #         "*.kidd.network" = {
+    #           service = "http://localhost:80";
+    #           path = "/*.(jpg|png|css|js)";
+    #         };
+    #       };
+    #       default = "http_status:404";
+    #     };
+    #   };
+    # };
 
     # Enable SSH login for root
     openssh = {
