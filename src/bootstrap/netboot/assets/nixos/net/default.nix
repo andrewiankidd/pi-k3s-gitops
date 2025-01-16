@@ -86,6 +86,8 @@ in
           createNamespace = true;
           chart = "https://%{KUBERNETES_API}%/static/charts/ArgoCD.tgz";
           valuesContent = ''
+            global:
+              domain: argocd.kidd.network
             server:
               autoscaling:
                 enabled: false
@@ -100,6 +102,41 @@ in
 
             applicationSet:
               replicas: 1
+
+            rbac:
+              create: true
+              policy.default: role:admin
+              policy.csv: |
+                # Grant admin role full access to everything
+                p, role:admin, applications, *, */*, allow
+                p, role:admin, clusters, get, *, allow
+                p, role:admin, repositories, *, *, allow
+                p, role:admin, logs, get, *, allow
+                p, role:admin, exec, create, */*, allow
+                p, role:admin, *, *, *, allow
+
+                # Assign the admin user to the admin role
+                g, admin, role:admin
+
+                # Map the admin user to the quendi-admin role
+                g, admin, role:quendi-admin
+                # Grant admin permissions to the quendi namespace
+                p, role:quendi-admin, applications, *, quendi/*, allow
+                p, role:quendi-admin, projects, *, quendi, allow
+
+                # Map the admin user to the atani-admin role
+                g, admin, role:atani-admin
+                # Grant admin permissions to the atani namespace
+                p, role:atani-admin, applications, *, atani/*, allow
+                p, role:atani-admin, projects, *, atani, allow
+
+                # Map the admin user to the perian-admin role
+                g, admin, role:perian-admin
+                # Grant admin permissions to the perian namespace
+                p, role:perian-admin, applications, *, perian/*, allow
+                p, role:perian-admin, projects, *, perian, allow
+              scopes: "[groups]"
+              policy.matchMode: "glob"
           '';
         };
       };
@@ -175,7 +212,7 @@ in
             projects:
               quendi:
                 namespace: argocd
-                description: "Project for managing Quendi applications"
+                description: "Project for managing Critical applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
                 destinations:
@@ -189,17 +226,17 @@ in
                     kind: "Secret"
                 orphanedResources:
                   warn: true
-                roles:
-                  - name: quendi-admin
-                    description: "Admin role for Quendi project"
-                    policies:
-                      - "p, proj:quendi:quendi-admin, applications, *, quendi/*, allow"
-                    groups:
-                      - "quendi-admin-group"
+                # roles:
+                #   - name: quendi-admin
+                #     description: "Admin role for Quendi project"
+                #     policies:
+                #       - "p, proj:quendi:quendi-admin, applications, *, quendi/*, allow"
+                #     groups:
+                #       - "quendi-admin-group"
 
               atani:
                 namespace: argocd
-                description: "Project for managing Atani applications"
+                description: "Project for managing Important applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
                 destinations:
@@ -213,17 +250,17 @@ in
                     kind: "Secret"
                 orphanedResources:
                   warn: true
-                roles:
-                  - name: atani-admin
-                    description: "Admin role for Atani project"
-                    policies:
-                      - "p, proj:atani:atani-admin, applications, *, atani/*, allow"
-                    groups:
-                      - "atani-admin-group"
+                # roles:
+                #   - name: atani-admin
+                #     description: "Admin role for Atani project"
+                #     policies:
+                #       - "p, proj:atani:atani-admin, applications, *, atani/*, allow"
+                #     groups:
+                #       - "atani-admin-group"
 
               perian:
                 namespace: argocd
-                description: "Project for managing Perian applications"
+                description: "Project for managing Other applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
                 destinations:
@@ -237,13 +274,13 @@ in
                     kind: "Secret"
                 orphanedResources:
                   warn: true
-                roles:
-                  - name: perian-admin
-                    description: "Admin role for Perian project"
-                    policies:
-                      - "p, proj:perian:perian-admin, applications, *, perian/*, allow"
-                    groups:
-                      - "perian-admin-group"
+                # roles:
+                #   - name: perian-admin
+                #     description: "Admin role for Perian project"
+                #     policies:
+                #       - "p, proj:perian:perian-admin, applications, *, perian/*, allow"
+                #     groups:
+                #       - "perian-admin-group"
           '';
         };
       };
