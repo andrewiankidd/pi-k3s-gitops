@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: crafty-app
-  namespace: argocd  # Specify the namespace where Argo CD is installed
+  namespace: perian  # Specify the namespace where Argo CD is installed
 spec:
   project: default
   source:

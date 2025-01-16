@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: stable-diffusion-webui
-  namespace: argocd
+  namespace: perian
 spec:
   destination:
     namespace: stable-diffusion-webui
