@@ -118,7 +118,7 @@ in
         apiVersion = "networking.k8s.io/v1";
         kind = "Ingress";
         metadata = {
-          name = "argocd";
+          name = "argocd-ingress";
           namespace = "argocd";
           annotations = {
             "nginx.ingress.kubernetes.io/limit-rps" = "5";
@@ -132,11 +132,11 @@ in
           ingressClassName = "traefik";
           rules = [
             {
-              host = "192.168.0.243";  # TODO iluvatar.kidd.network
+              host = "iluvatar.kidd.network";
               http = {
                 paths = [
                   {
-                    path = "/";
+                    path = "/argocd";
                     pathType = "Prefix";
                     backend = {
                       service = {
