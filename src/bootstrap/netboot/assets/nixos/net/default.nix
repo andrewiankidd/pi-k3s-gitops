@@ -283,9 +283,6 @@ in
                 clusterResourceWhitelist:
                   - group: "*"
                     kind: "*"
-                namespaceResourceBlacklist:
-                  - group: ""
-                    kind: "Secret"
                 orphanedResources:
                   warn: true
                 # roles:
@@ -311,9 +308,6 @@ in
                 clusterResourceWhitelist:
                   - group: "*"
                     kind: "*"
-                namespaceResourceBlacklist:
-                  - group: ""
-                    kind: "Secret"
                 orphanedResources:
                   warn: true
                 # roles:
