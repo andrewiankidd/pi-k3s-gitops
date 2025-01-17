@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: mineos
-          image: hexparrot/mineos:latest  # Replace with your Docker image
+          image: greggee/mineos:latest  # Replace with your Docker image
           ports:
             - containerPort: 80
