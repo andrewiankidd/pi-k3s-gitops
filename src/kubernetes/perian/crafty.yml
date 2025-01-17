@@ -19,3 +19,28 @@ spec:
     automated:
       prune: true  # Automatically remove resources that are no longer part of the application
       selfHeal: true  # Automatically sync and heal the app if resources go out of sync
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crafty-ingress
+  namespace: quendi-crafty
+  annotations:
+    nginx.ingress.kubernetes.io/limit-rps: "5"
+    nginx.ingress.kubernetes.io/limit-rpm: "100"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    traefik.ingress.kubernetes.io/router.tls: "false"
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: crafty.kidd.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: crafty
+                port:
+                  number: 80
