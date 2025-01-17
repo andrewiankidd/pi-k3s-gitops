@@ -20,6 +20,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: mineos
+                name: mineos-service
                 port:
                   number: 80
