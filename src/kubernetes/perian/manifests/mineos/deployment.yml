@@ -16,3 +16,5 @@ spec:
       containers:
         - name: mineos
           image: greggee/mineos:latest
+          ports:
+            - containerPort: 8443
