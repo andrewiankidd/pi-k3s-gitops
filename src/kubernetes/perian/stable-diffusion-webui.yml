@@ -7,7 +7,7 @@ spec:
   destination:
     namespace: stable-diffusion-webui
     server: https://kubernetes.default.svc
-  project: default
+  project: perian
   source:
     repoURL: https://ppts-ai.github.io/apps/
     chart: stable-diffusion-webui

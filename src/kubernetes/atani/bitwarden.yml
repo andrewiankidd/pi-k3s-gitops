@@ -4,7 +4,7 @@ metadata:
   name: bitwarden
   namespace: atani
 spec:
-  project: default
+  project: atani
   source:
     repoURL: https://cdwv.github.io/bitwarden-k8s/
     targetRevision: latest  # Or specify a version if needed

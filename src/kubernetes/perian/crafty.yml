@@ -4,7 +4,7 @@ metadata:
   name: crafty-app
   namespace: perian  # Specify the namespace where Argo CD is installed
 spec:
-  project: default
+  project: perian
   source:
     repoURL: oci://tccr.io/truecharts/crafty-4  # OCI repository URL for the Helm chart
     targetRevision: latest  # This will deploy the latest version of the chart

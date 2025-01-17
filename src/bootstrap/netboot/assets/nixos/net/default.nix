@@ -4,6 +4,9 @@ let
   # Define shared variables
   k3sServerAddr = "https://192.168.0.108:6443";
   k3sToken = "todo-pi-k3s-gitops";
+
+  # Define the plaintext password
+  argoPassword = "admin1234";
 in
 {
   # System configuration
@@ -23,6 +26,29 @@ in
     # Enable Multi-Node k3s
     k3s =
       let
+        # Generate the hashed password using the htpasswd command
+        hashedArgoPassword =
+          pkgs.runCommand "generate-argo-password" {
+            nativeBuildInputs = with pkgs; [
+              apacheHttpd
+            ];
+        }
+        ''
+          echo -n ${argoPassword} | htpasswd -nbBC 10 "" - | tr -d ':\n' > $out
+        '';
+
+        # Create timestamp for passwordmtime
+        currentTimestamp =
+          pkgs.runCommand "generate-timestamp" {
+            nativeBuildInputs = with pkgs; [
+              pkgs.coreutils
+              pkgs.gnused
+              pkgs.dateutils
+            ];
+          }
+          ''
+            date --utc '+%Y-%m-%dT%H:%M:%SZ' > $out
+          '';
 
         # https://artifacthub.io/packages/helm/argo/argo-cd
         argocdChart =
@@ -103,40 +129,47 @@ in
             applicationSet:
               replicas: 1
 
-            rbac:
-              create: true
-              policy.default: role:admin
-              policy.csv: |
-                # Grant admin role full access to everything
-                p, role:admin, applications, *, */*, allow
-                p, role:admin, clusters, get, *, allow
-                p, role:admin, repositories, *, *, allow
-                p, role:admin, logs, get, *, allow
-                p, role:admin, exec, create, */*, allow
-                p, role:admin, *, *, *, allow
+            configs:
+              params:
+                application.namespaces: "*"
+            #   secret:
+            #     argocdServerAdminPassword: "${hashedArgoPassword}"
+            #     argocdServerAdminPasswordMtime: "${currentTimestamp}"
 
-                # Assign the admin user to the admin role
-                g, admin, role:admin
+            # rbac:
+            #   create: true
+            #   policy.default: role:admin
+            #   policy.csv: |
+            #     # Grant admin role full access to everything
+            #     p, role:admin, applications, *, */*, allow
+            #     p, role:admin, clusters, get, *, allow
+            #     p, role:admin, repositories, *, *, allow
+            #     p, role:admin, logs, get, *, allow
+            #     p, role:admin, exec, create, */*, allow
+            #     p, role:admin, *, *, *, allow
 
-                # Map the admin user to the quendi-admin role
-                g, admin, role:quendi-admin
-                # Grant admin permissions to the quendi namespace
-                p, role:quendi-admin, applications, *, quendi/*, allow
-                p, role:quendi-admin, projects, *, quendi, allow
+            #     # Assign the admin user to the admin role
+            #     g, admin, role:admin
 
-                # Map the admin user to the atani-admin role
-                g, admin, role:atani-admin
-                # Grant admin permissions to the atani namespace
-                p, role:atani-admin, applications, *, atani/*, allow
-                p, role:atani-admin, projects, *, atani, allow
+            #     # Map the admin user to the quendi-admin role
+            #     g, admin, role:quendi-admin
+            #     # Grant admin permissions to the quendi namespace
+            #     p, role:quendi-admin, applications, *, quendi/*, allow
+            #     p, role:quendi-admin, projects, *, quendi, allow
 
-                # Map the admin user to the perian-admin role
-                g, admin, role:perian-admin
-                # Grant admin permissions to the perian namespace
-                p, role:perian-admin, applications, *, perian/*, allow
-                p, role:perian-admin, projects, *, perian, allow
-              scopes: "[groups]"
-              policy.matchMode: "glob"
+            #     # Map the admin user to the atani-admin role
+            #     g, admin, role:atani-admin
+            #     # Grant admin permissions to the atani namespace
+            #     p, role:atani-admin, applications, *, atani/*, allow
+            #     p, role:atani-admin, projects, *, atani, allow
+
+            #     # Map the admin user to the perian-admin role
+            #     g, admin, role:perian-admin
+            #     # Grant admin permissions to the perian namespace
+            #     p, role:perian-admin, applications, *, perian/*, allow
+            #     p, role:perian-admin, projects, *, perian, allow
+            #   scopes: "[groups]"
+            #   policy.matchMode: "glob"
           '';
         };
       };

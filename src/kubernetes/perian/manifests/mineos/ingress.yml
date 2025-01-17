@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mineos-ingress
-  namespace: default
+  namespace: mineos
 spec:
   rules:
     - host: your-domain.com  # Replace with your actual domain
