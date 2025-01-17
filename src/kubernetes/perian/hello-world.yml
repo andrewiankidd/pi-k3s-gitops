@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-world
+  namespace: perian
+spec:
+  project: perian
+  source:
+    repoURL: https://github.com/andrewiankidd/pi-k3s-gitops
+    targetRevision: feature/master-node
+    path: src/kubernetes/perian/manifests/hello-world
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: perian-hello-world
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
