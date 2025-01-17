@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: quendi
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: quendi
+  source:
+    chart: longhorn
+    repoURL: https://charts.longhorn.io/
+    targetRevision: '*'
+    helm:
+      releaseName: longhorn
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: quendi-longhorn
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - Replace=true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: longhorn-ingress
+  namespace: quendi-longhorn
+  annotations:
+    nginx.ingress.kubernetes.io/limit-rps: "5"
+    nginx.ingress.kubernetes.io/limit-rpm: "100"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    traefik.ingress.kubernetes.io/router.tls: "false"
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: longhorn.kidd.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: longhorn
+                port:
+                  number: 80
