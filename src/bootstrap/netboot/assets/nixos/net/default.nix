@@ -248,6 +248,9 @@ in
                 description: "Project for managing Critical applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                sourceNamespaces:
+                  - quendi
+                  - argocd
                 destinations:
                   - namespace: quendi
                     server: "https://kubernetes.default.svc"
@@ -272,6 +275,9 @@ in
                 description: "Project for managing Important applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                sourceNamespaces:
+                  - atani
+                  - argocd
                 destinations:
                   - namespace: atani
                     server: "https://kubernetes.default.svc"
@@ -296,6 +302,9 @@ in
                 description: "Project for managing Other applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                sourceNamespaces:
+                  - perian
+                  - argocd
                 destinations:
                   - namespace: perian
                     server: "https://kubernetes.default.svc"
