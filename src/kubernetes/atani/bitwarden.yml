@@ -10,7 +10,7 @@ spec:
   project: atani
   source:
     repoURL: https://charts.bitwarden.com/
-    chart: bitwarden/self-host
+    chart: self-host
     targetRevision: '*'
     helm:
       valuesObject:
