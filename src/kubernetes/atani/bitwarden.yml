@@ -4,32 +4,22 @@ metadata:
   name: bitwarden
   namespace: atani
 spec:
+  destination:
+    namespace: atani-nginx
+    server: https://kubernetes.default.svc
   project: atani
   source:
-    repoURL: https://cdwv.github.io/bitwarden-k8s/
-    targetRevision: latest  # Or specify a version if needed
-    chart: bitwarden-k8s
+    repoURL: https://charts.bitwarden.com/
+    chart: bitwarden/self-host
+    targetRevision: latest
     helm:
-      values: |
+      valuesObject:
+        domain: bitwarden.kidd.network
         ingress:
-          enabled: true
-          host: bitwarden.example.com  # Replace with your desired domain
-          path: /
-          tls:
-            enabled: true
-            secretName: bitwarden-tls-secret
-        bitwarden_rs:
-          dataVolume:
-            persistentVolumeClaim: bitwarden-data  # Make sure this PVC exists, or configure your storage
-          environment:
-            - name: DATABASE_URL
-              value: postgres://username:password@hostname/dbname
-          externalAuth:
-            enabled: false  # Adjust based on your auth requirements
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: atani-bitwarden  # You can specify any desired namespace here
+          enabled: false
   syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
     automated:
       prune: true
       selfHeal: true
