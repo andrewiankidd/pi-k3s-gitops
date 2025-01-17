@@ -10,5 +10,5 @@ spec:
     - name: hello-world-80
       protocol: TCP
       port: 80
-      targetPort: 8000
+      targetPort: 5678
   type: ClusterIP
