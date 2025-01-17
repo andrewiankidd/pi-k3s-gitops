@@ -14,7 +14,7 @@ spec:
         # Here you can override the default values if needed
   destination:
     server: https://kubernetes.default.svc
-    namespace: crafty  # Namespace where the app will be deployed
+    namespace: perian-crafty  # Namespace where the app will be deployed
   syncPolicy:
     automated:
       prune: true  # Automatically remove resources that are no longer part of the application

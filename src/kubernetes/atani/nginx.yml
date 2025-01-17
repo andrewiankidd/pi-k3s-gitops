@@ -5,7 +5,7 @@ metadata:
   namespace: atani
 spec:
   destination:
-    namespace: nginx
+    namespace: atani-nginx
     server: https://kubernetes.default.svc
   project: atani
   source:

@@ -28,7 +28,7 @@ spec:
             enabled: false  # Adjust based on your auth requirements
   destination:
     server: https://kubernetes.default.svc
-    namespace: bitwarden  # You can specify any desired namespace here
+    namespace: atani-bitwarden  # You can specify any desired namespace here
   syncPolicy:
     automated:
       prune: true

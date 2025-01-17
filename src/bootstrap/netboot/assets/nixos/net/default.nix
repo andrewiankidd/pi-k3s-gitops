@@ -248,11 +248,12 @@ in
                 description: "Project for managing Critical applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                  - *
                 sourceNamespaces:
                   - quendi
                   - argocd
                 destinations:
-                  - namespace: quendi
+                  - namespace: quendi*
                     server: "https://kubernetes.default.svc"
                 clusterResourceWhitelist:
                   - group: "*"
@@ -275,11 +276,12 @@ in
                 description: "Project for managing Important applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                  - *
                 sourceNamespaces:
                   - atani
                   - argocd
                 destinations:
-                  - namespace: atani
+                  - namespace: atani*
                     server: "https://kubernetes.default.svc"
                 clusterResourceWhitelist:
                   - group: "*"
@@ -302,11 +304,12 @@ in
                 description: "Project for managing Other applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
+                  - *
                 sourceNamespaces:
                   - perian
                   - argocd
                 destinations:
-                  - namespace: perian
+                  - namespace: perian*
                     server: "https://kubernetes.default.svc"
                 clusterResourceWhitelist:
                   - group: "*"

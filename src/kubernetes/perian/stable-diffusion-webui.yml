@@ -5,7 +5,7 @@ metadata:
   namespace: perian
 spec:
   destination:
-    namespace: stable-diffusion-webui
+    namespace: perian-stable-diffusion-webui
     server: https://kubernetes.default.svc
   project: perian
   source:

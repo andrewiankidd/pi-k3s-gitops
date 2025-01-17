@@ -11,7 +11,7 @@ spec:
     path: src/kubernetes/perian/manifests/mineos
   destination:
     server: https://kubernetes.default.svc
-    namespace: mineos
+    namespace: perian-mineos
   syncPolicy:
     automated:
       prune: true

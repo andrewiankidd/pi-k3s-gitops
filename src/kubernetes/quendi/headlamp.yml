@@ -16,7 +16,7 @@ spec:
       releaseName: headlamp
   destination:
     server: https://kubernetes.default.svc
-    namespace: headlamp
+    namespace: quendi-headlamp
   syncPolicy:
     automated:
       selfHeal: true
