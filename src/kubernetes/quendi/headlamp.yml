@@ -13,7 +13,8 @@ spec:
     targetRevision: 0.27.0
     helm:
       releaseName: headlamp
-    directory: src/kubernetes/quendi/headlamp
+    directory:
+      include: src/kubernetes/quendi/headlamp
   destination:
     server: https://kubernetes.default.svc
     namespace: quendi-headlamp
