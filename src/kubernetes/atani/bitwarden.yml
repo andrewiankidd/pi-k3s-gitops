@@ -32,8 +32,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/limit-rps: "5"
     nginx.ingress.kubernetes.io/limit-rpm: "100"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    traefik.ingress.kubernetes.io/router.tls: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    traefik.ingress.kubernetes.io/router.tls: "true"
     kubernetes.io/ingress.class: "traefik"
 spec:
   ingressClassName: traefik
