@@ -12,15 +12,6 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - http:
-        paths:
-          - path: /mineos
-            pathType: Prefix
-            backend:
-              service:
-                name: mineos-service
-                port:
-                  number: 80
     - host: mineos.kidd.network
       http:
         paths:
