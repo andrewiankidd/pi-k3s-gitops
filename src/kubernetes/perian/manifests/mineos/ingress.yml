@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mineos-ingress
-  namespace: quendi-mineos
+  namespace: perian-mineos
   annotations:
     nginx.ingress.kubernetes.io/limit-rps: "5"
     nginx.ingress.kubernetes.io/limit-rpm: "100"

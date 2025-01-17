@@ -24,7 +24,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: crafty-ingress
-  namespace: quendi-crafty
+  namespace: perian-crafty
   annotations:
     nginx.ingress.kubernetes.io/limit-rps: "5"
     nginx.ingress.kubernetes.io/limit-rpm: "100"

@@ -23,7 +23,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: stable-diffusion-webui-ingress
-  namespace: quendi-stable-diffusion-webui
+  namespace: perian-stable-diffusion-webui
   annotations:
     nginx.ingress.kubernetes.io/limit-rps: "5"
     nginx.ingress.kubernetes.io/limit-rpm: "100"
