@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mineos-ingress
+  namespace: perian-mineos
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "false"
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: mineos.kidd.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mineos-service
+                port:
+                  number: 80

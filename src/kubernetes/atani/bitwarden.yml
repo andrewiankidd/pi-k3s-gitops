@@ -8,40 +8,16 @@ spec:
     namespace: atani-nginx
     server: https://kubernetes.default.svc
   project: atani
-  source:
-    repoURL: https://charts.bitwarden.com/
-    chart: self-host
-    targetRevision: '*'
-    helm:
-      valuesObject:
-        domain: bitwarden.kidd.network
-        ingress:
-          enabled: false
+  sources:
+    - repoURL: https://charts.bitwarden.com/
+      chart: self-host
+      targetRevision: '*'
+    - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
+      targetRevision: feature/master-node
+      path: src/kubernetes/atani/bitwarden
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
     automated:
       prune: true
       selfHeal: true
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: bitwarden-ingress
-  namespace: atani-bitwarden
-  annotations:
-    traefik.ingress.kubernetes.io/router.tls: "false"
-    kubernetes.io/ingress.class: "traefik"
-spec:
-  ingressClassName: traefik
-  rules:
-    - host: bitwarden.kidd.network
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: bitwarden
-                port:
-                  number: 80

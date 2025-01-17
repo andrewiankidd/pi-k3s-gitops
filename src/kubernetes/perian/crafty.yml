@@ -1,45 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: crafty-app
-  namespace: perian  # Specify the namespace where Argo CD is installed
+  name: mineos
+  namespace: perian
 spec:
   project: perian
   source:
-    repoURL: oci://tccr.io/truecharts/crafty-4  # OCI repository URL for the Helm chart
-    targetRevision: '*'  # This will deploy the latest version of the chart
-    chart: crafty-4  # The chart name
-    helm:
-      values: |  # Use default values from the chart
-        # Here you can override the default values if needed
+    repoURL: https://github.com/andrewiankidd/pi-k3s-gitops
+    targetRevision: feature/master-node
+    path: src/kubernetes/perian/manifests/mineos
   destination:
     server: https://kubernetes.default.svc
-    namespace: perian-crafty  # Namespace where the app will be deployed
+    namespace: perian-mineos
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
     automated:
       prune: true
       selfHeal: true
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: crafty-ingress
-  namespace: perian-crafty
-  annotations:
-    traefik.ingress.kubernetes.io/router.tls: "false"
-    kubernetes.io/ingress.class: "traefik"
-spec:
-  ingressClassName: traefik
-  rules:
-    - host: crafty.kidd.network
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: crafty
-                port:
-                  number: 80

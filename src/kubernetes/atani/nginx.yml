@@ -8,35 +8,16 @@ spec:
     namespace: atani-nginx
     server: https://kubernetes.default.svc
   project: atani
-  source:
-    repoURL: https://charts.bitnami.com/bitnami
-    chart: nginx
-    targetRevision: 18.3.5
+  sources:
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: nginx
+      targetRevision: 18.3.5
+    - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
+      targetRevision: feature/master-node
+      path: src/kubernetes/atani/nginx
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
     automated:
       prune: true
       selfHeal: true
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nginx-ingress
-  namespace: atani-nginx
-  annotations:
-    traefik.ingress.kubernetes.io/router.tls: "false"
-    kubernetes.io/ingress.class: "traefik"
-spec:
-  ingressClassName: traefik
-  rules:
-    - host: nginx.kidd.network
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: nginx
-                port:
-                  number: 80

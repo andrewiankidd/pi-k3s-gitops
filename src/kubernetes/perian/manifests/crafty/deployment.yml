@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crafty
+  namespace: perian-crafty
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crafty
+  template:
+    metadata:
+      labels:
+        app: crafty
+    spec:
+      containers:
+        - name: crafty
+          image: arcadiatechnology/crafty-4:latest
+          ports:
+            - containerPort: 8000
