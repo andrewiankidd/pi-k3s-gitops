@@ -7,7 +7,7 @@ spec:
   project: perian
   source:
     repoURL: oci://tccr.io/truecharts/crafty-4  # OCI repository URL for the Helm chart
-    targetRevision: latest  # This will deploy the latest version of the chart
+    targetRevision: '*'  # This will deploy the latest version of the chart
     chart: crafty-4  # The chart name
     helm:
       values: |  # Use default values from the chart
