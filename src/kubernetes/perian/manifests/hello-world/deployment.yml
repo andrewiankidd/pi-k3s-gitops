@@ -16,5 +16,7 @@ spec:
       containers:
         - name: hello-world
           image: hashicorp/http-echo:latest
+          args:
+            - "-text=Hello, ArgoCD!"
           ports:
             - containerPort: 5678
