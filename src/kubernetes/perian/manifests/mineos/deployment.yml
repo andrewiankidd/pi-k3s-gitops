@@ -17,4 +17,4 @@ spec:
         - name: mineos
           image: greggee/mineos:latest  # Replace with your Docker image
           ports:
-            - containerPort: 80
+            - containerPort: 8443
