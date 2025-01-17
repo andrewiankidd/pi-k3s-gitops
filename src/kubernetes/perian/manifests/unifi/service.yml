@@ -7,7 +7,8 @@ spec:
   selector:
     app: unifi
   ports:
-    - protocol: TCP
+    - name: unifi-80
+      protocol: TCP
       port: 80
       targetPort: 8443
   type: ClusterIP
