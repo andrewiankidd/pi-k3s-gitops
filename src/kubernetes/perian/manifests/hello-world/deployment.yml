@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: hello-world
-          image: crccheck/hello-world:latest
+          image: hashicorp/http-echo:latest
           ports:
-            - containerPort: 8443
+            - containerPort: 5678
