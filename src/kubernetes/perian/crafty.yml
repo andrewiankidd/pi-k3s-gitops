@@ -16,9 +16,11 @@ spec:
     server: https://kubernetes.default.svc
     namespace: perian-crafty  # Namespace where the app will be deployed
   syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
     automated:
-      prune: true  # Automatically remove resources that are no longer part of the application
-      selfHeal: true  # Automatically sync and heal the app if resources go out of sync
+      prune: true
+      selfHeal: true
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
