@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mineos
-  namespace: mineos
+  namespace: perian-mineos
 spec:
   replicas: 1
   selector:
