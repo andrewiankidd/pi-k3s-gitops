@@ -13,7 +13,7 @@ spec:
       chart: headlamp
     - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
       targetRevision: feature/master-node
-      path: src\kubernetes\quendi\headlamp
+      path: src/kubernetes/quendi/headlamp
   destination:
     server: https://kubernetes.default.svc
     namespace: quendi-headlamp
