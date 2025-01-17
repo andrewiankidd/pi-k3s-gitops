@@ -11,6 +11,7 @@ spec:
   source:
     repoURL: https://charts.bitwarden.com/
     chart: bitwarden/self-host
+    targetRevision: '*'
     helm:
       valuesObject:
         domain: bitwarden.kidd.network
