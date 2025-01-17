@@ -7,12 +7,13 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: quendi
-  source:
-    chart: longhorn
-    repoURL: https://charts.longhorn.io/
-    targetRevision: '*'
-    helm:
-      releaseName: longhorn
+  sources:
+    - repoURL: https://charts.longhorn.io/
+      targetRevision: '*'
+      chart: longhorn
+    - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
+      targetRevision: feature/master-node
+      path: src/kubernetes/quendi/longhorn
   destination:
     server: https://kubernetes.default.svc
     namespace: quendi-longhorn
@@ -22,25 +23,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: longhorn-ingress
-  namespace: quendi-longhorn
-  annotations:
-    traefik.ingress.kubernetes.io/router.tls: "false"
-    kubernetes.io/ingress.class: "traefik"
-spec:
-  ingressClassName: traefik
-  rules:
-    - host: longhorn.kidd.network
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: longhorn
-                port:
-                  number: 80
