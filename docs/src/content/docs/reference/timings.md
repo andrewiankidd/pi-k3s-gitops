@@ -11,6 +11,8 @@ blah blah blah
 | Bootstrap Build | 10s  |
 | OS Boot         | 10s  |
 | Argo Ready      | 15s  |
+| hello world     |      |
+| headlamp        | 10s  |
 | Bitwarden       | 20s  |
 | Nginx           | 25s  |
 | Stage 5         | 30s  |
