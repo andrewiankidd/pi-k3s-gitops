@@ -8,7 +8,7 @@ metadata:
 spec:
   project: quendi
   sources:
-    - repoURL: https://lgtm.github.io/helm-charts
+    - repoURL: https://grafana.github.io/helm-charts/
       targetRevision: 2.1.0
       chart: lgtm-distributed
     - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
