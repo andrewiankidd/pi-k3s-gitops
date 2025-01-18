@@ -50,6 +50,7 @@ in
             date --utc '+%Y-%m-%dT%H:%M:%SZ' > $out
           '';
 
+        # Download the helm chart at build time so it is immediately available when the OS starts
         # https://artifacthub.io/packages/helm/argo/argo-cd
         argocdChart =
           pkgs.runCommand "argocd-chart"
@@ -69,6 +70,7 @@ in
               mv ./*.tgz $out
             '';
 
+        # Download the helm chart at build time so it is immediately available when the OS starts
         # https://artifacthub.io/packages/helm/argo/argocd-apps
         argocdappsChart =
           pkgs.runCommand "argocdapps-chart"
@@ -97,9 +99,10 @@ in
         "--etcd-snapshot-schedule-cron=0"
         "--etcd-disable-snapshots"
         "--datastore-endpoint=sqlite:///var/lib/rancher/k3s/k3s.db"
-        "--kubelet-arg=eviction-hard=nodefs.available<1%,imagefs.available<1%"
+        "--kubelet-arg=eviction-hard=nodefs.available<1%,imagefs.available<1%,ephemeral-storage.available<1Mi"
         "--debug"
       ];
+      # Apply our pre-downloaded Argo CD chart at runtime
       charts.ArgoCD = argocdChart;
       manifests.argocd.content = {
         apiVersion = "helm.cattle.io/v1";
@@ -115,6 +118,7 @@ in
           valuesContent = ''
             global:
               domain: argocd.kidd.network
+              priorityClassName: system-cluster-critical
             server:
               autoscaling:
                 enabled: false
@@ -174,6 +178,7 @@ in
           '';
         };
       };
+      # Apply our pre-packaged ArgoCD Apps chart at runtime
       charts.ArgoCDApps = argocdappsChart;
       manifests.argocd-apps.content = {
         apiVersion = "helm.cattle.io/v1";
