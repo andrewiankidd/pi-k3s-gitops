@@ -248,7 +248,7 @@ in
                 description: "Project for managing Critical applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
-                  - *
+                  - "*"
                 sourceNamespaces:
                   - quendi
                   - argocd
@@ -267,13 +267,12 @@ in
                 #       - "p, proj:quendi:quendi-admin, applications, *, quendi/*, allow"
                 #     groups:
                 #       - "quendi-admin-group"
-
               atani:
                 namespace: argocd
                 description: "Project for managing Important applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
-                  - *
+                  - "*"
                 sourceNamespaces:
                   - atani
                   - argocd
@@ -292,13 +291,12 @@ in
                 #       - "p, proj:atani:atani-admin, applications, *, atani/*, allow"
                 #     groups:
                 #       - "atani-admin-group"
-
               perian:
                 namespace: argocd
                 description: "Project for managing Other applications"
                 sourceRepos:
                   - "https://github.com/andrewiankidd/pi-k3s-gitops.git"
-                  - *
+                  - "*"
                 sourceNamespaces:
                   - perian
                   - argocd
