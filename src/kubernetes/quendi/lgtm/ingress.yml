@@ -16,7 +16,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: grafana
+                name: lgtm-grafana
                 port:
                   number: 80
     - host: loki.kidd.network
@@ -26,7 +26,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: loki
+                name: lgtm-loki
                 port:
                   number: 80
     - host: mimir.kidd.network
@@ -36,7 +36,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: mimir
+                name: lgtm-mimir
                 port:
                   number: 80
     - host: grafana-oncall.kidd.network
@@ -46,7 +46,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: grafana-oncall
+                name: lgtm-grafana-oncall
                 port:
                   number: 80
     - host: tempo.kidd.network
@@ -56,6 +56,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: tempo
+                name: lgtm-tempo
                 port:
                   number: 80
