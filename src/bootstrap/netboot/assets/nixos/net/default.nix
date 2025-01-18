@@ -7,6 +7,15 @@ let
 
   # Define the plaintext password
   argoPassword = "admin1234";
+
+  # hostname
+  possibleHostnames = [ "manwe" "varda" "ulmo" "yavanna" "aule" "mandos" "nienna" "orome" ];
+  # Get the MAC address of the first network interface
+  macAddress = lib.mkDefault (builtins.head (builtins.attrValues config.networking.interfaces));
+  macHash = builtins.hashString "sha256" macAddress;
+  # Pick a random index based on the hash of the MAC address
+  randomIndex = (builtins.parseInt macHash) % (length names);
+  randomHostName = possibleHostnames[randomIndex];
 in
 {
   # System configuration
@@ -206,11 +215,11 @@ in
                   server: https://kubernetes.default.svc
                   namespace: quendi
                 syncPolicy:
-                  automated:
-                    prune: false
-                    selfHeal: false
                   syncOptions:
-                  - CreateNamespace=true
+                    - CreateNamespace=true
+                  automated:
+                    prune: true
+                    selfHeal: true
               atani:
                 namespace: argocd
                 finalizers:
@@ -224,11 +233,11 @@ in
                   server: https://kubernetes.default.svc
                   namespace: atani
                 syncPolicy:
-                  automated:
-                    prune: false
-                    selfHeal: false
                   syncOptions:
-                  - CreateNamespace=true
+                    - CreateNamespace=true
+                  automated:
+                    prune: true
+                    selfHeal: true
               perian:
                 namespace: argocd
                 finalizers:
@@ -242,11 +251,11 @@ in
                   server: https://kubernetes.default.svc
                   namespace: perian
                 syncPolicy:
-                  automated:
-                    prune: false
-                    selfHeal: false
                   syncOptions:
-                  - CreateNamespace=true
+                    - CreateNamespace=true
+                  automated:
+                    prune: true
+                    selfHeal: true
 
             projects:
               quendi:
@@ -529,7 +538,7 @@ in
   };
 
   networking = {
-    hostName = "pi-k3s-gitops-net-${builtins.substring 0 10 (builtins.hashString "sha256" "pi-k3s-gitops")}";
+    hostName = "pi-k3s-gitops-${randomHostName}-${builtins.substring 0 10 (builtins.hashString "sha256" "pi-k3s-gitops")}";
     useDHCP = false;
     interfaces = {
       wlan0.useDHCP = true;

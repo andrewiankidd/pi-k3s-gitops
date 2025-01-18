@@ -1,20 +1,20 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: crafty
-  namespace: perian
-spec:
-  project: perian
-  source:
-    repoURL: https://github.com/andrewiankidd/pi-k3s-gitops
-    targetRevision: feature/master-node
-    path: src/kubernetes/perian/crafty
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: perian-crafty
-  syncPolicy:
-    syncOptions:
-      - CreateNamespace=true
-    automated:
-      prune: true
-      selfHeal: true
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: crafty
+#   namespace: perian
+# spec:
+#   project: perian
+#   source:
+#     repoURL: https://github.com/andrewiankidd/pi-k3s-gitops
+#     targetRevision: feature/master-node
+#     path: src/kubernetes/perian/crafty
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: perian-crafty
+#   syncPolicy:
+#     syncOptions:
+#       - CreateNamespace=true
+#     automated:
+#       prune: true
+#       selfHeal: true
