@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/andrewiankidd/pi-k3s-gitops
     targetRevision: feature/master-node
-    path: src/kubernetes/perian/manifests/mineos
+    path: src/kubernetes/perian/mineos
   destination:
     server: https://kubernetes.default.svc
     namespace: perian-mineos
