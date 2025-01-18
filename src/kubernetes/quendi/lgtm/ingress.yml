@@ -26,7 +26,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: lgtm-loki
+                name: lgtm-loki-gateway
                 port:
                   number: 80
     - host: mimir.kidd.network
@@ -36,7 +36,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: lgtm-mimir
+                name: lgtm-mimir-nginx
                 port:
                   number: 80
     - host: grafana-oncall.kidd.network
