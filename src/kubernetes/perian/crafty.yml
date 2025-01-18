@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: mineos
+  name: crafty
   namespace: perian
 spec:
   project: perian
   source:
     repoURL: https://github.com/andrewiankidd/pi-k3s-gitops
     targetRevision: feature/master-node
-    path: src/kubernetes/perian/manifests/mineos
+    path: src/kubernetes/perian/manifests/crafty
   destination:
     server: https://kubernetes.default.svc
-    namespace: perian-mineos
+    namespace: perian-crafty
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
