@@ -16,6 +16,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: kyverno
+                name: kyverno-svc
                 port:
                   number: 80
