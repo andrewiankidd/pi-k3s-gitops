@@ -9,7 +9,7 @@ spec:
   project: quendi
   sources:
     - repoURL: https://charts.longhorn.io/
-      targetRevision: '*'
+      targetRevision: 1.7.2
       chart: longhorn
     - repoURL: https://github.com/andrewiankidd/pi-k3s-gitops.git
       targetRevision: feature/master-node
