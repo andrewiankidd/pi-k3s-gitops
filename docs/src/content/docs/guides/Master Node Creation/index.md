@@ -160,21 +160,6 @@ In order to do this I'm going to update my custom `sd/default.nix` configuration
   };
 ```
 
-### ArgoCD
-TODO
-
-ArgoCD documentation says:
-> For Argo CD v1.9 and later, the initial password is available from a secret named argocd-initial-admin-secret.
-
-```
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
-Might take a while for argo to initialize, so I stuck this in a loop until it's ready
-```
-while kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d | grep -q '^Error'; do sleep 1; done; kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
 ### IP Reconciliation
 TODO
 Nodes with SD cards should scan the network (arp? kubctl?) and detect if TFTP_IP/Option 66/192.168.0.108 exists

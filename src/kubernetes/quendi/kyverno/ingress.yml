@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kyverno-ingress
+  namespace: quendi-kyverno
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "false"
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: kyverno.kidd.network
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kyverno
+                port:
+                  number: 80

@@ -108,7 +108,7 @@ in
         "--etcd-snapshot-schedule-cron=0"
         "--etcd-disable-snapshots"
         "--datastore-endpoint=sqlite:///var/lib/rancher/k3s/k3s.db"
-        "--kubelet-arg=eviction-hard=nodefs.available<1%,imagefs.available<1%,ephemeral-storage.available<1Mi"
+        "--kubelet-arg=eviction-hard=nodefs.available<1%,imagefs.available<1%,containerfs.available<1%"
         "--debug"
       ];
       # Apply our pre-downloaded Argo CD chart at runtime
