@@ -11,11 +11,11 @@ let
   # hostname
   possibleHostnames = [ "manwe" "varda" "ulmo" "yavanna" "aule" "mandos" "nienna" "orome" ];
   # Get the MAC address of the first network interface
-  macAddress = lib.mkDefault (builtins.head (builtins.attrValues config.networking.interfaces));
-  macHash = builtins.hashString "sha256" macAddress;
+  #macAddress = lib.mkDefault (builtins.head (builtins.attrValues config.networking.interfaces));
+  #macHash = builtins.hashString "sha256" macAddress;
   # Pick a random index based on the hash of the MAC address
-  randomIndex = (builtins.parseInt macHash) % (length names);
-  randomHostName = possibleHostnames[randomIndex];
+  randomIndex = 1; # ((builtins.parseInt macHash) % (length names));
+  randomHostName = builtins.elemAt possibleHostnames randomIndex;
 in
 {
   # System configuration
