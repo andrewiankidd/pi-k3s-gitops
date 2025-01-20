@@ -6,7 +6,7 @@ This guide covers explanation and implementation of any required preperation of 
 
 ## Explanation
 
-Super annoyingly, the Pi won't do netboot by default. It will instead just boot loop and keep checking for USB and SD boot options.
+Super annoyingly (for this very specific use case), the Pi won't do netboot by default. It will instead just boot loop and keep checking for USB and SD boot options.
 
 To enable Network Boot you have to update the devices eeprom settings - the quickest way to do this is with the '[Raspberry Pi Imager](https://www.raspberrypi.com/software/)'
 

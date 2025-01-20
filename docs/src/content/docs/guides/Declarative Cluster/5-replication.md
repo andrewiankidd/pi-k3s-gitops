@@ -1,6 +1,6 @@
 ---
-title: About
-description: Master of Pi-ppets
+title: Persistance
+description: One Node to Rule Them All
 draft: true
 ---
 
@@ -12,7 +12,7 @@ draft: true
     <h3>TODO: still a WIP</h3>
 </center>
 
-This guide covers creation of a 'master' node for the cluster. The purpose of this node is to run all essential services needed to provision new nodes.
+
 
 ### Explanation
 
@@ -29,15 +29,15 @@ We want to give netboot nodes in the cluster the ability to *become* the master 
 
 They will then take on the burden of hosting the netboot files for netboot nodes that come online afterwards.
 
-To do this however, the node would need to (at the very least) run two servers, and without any existing servers to boot from there is just no way to do this... unless you plan in advance :)
+Sounds cool, but what if all nodes go down and there is nothing to boot from? You would have to bootstrap from source all over again
 
-The solution here is simple, but also something we have so far managed to avoid, adding an SD card to the Pi.
-
-The plan is to add an SD card to at least two Pi's in the cluster, this allows them to boot without an existing Node, and when they come online they will attempt to become the new master node.
+The solution here is simple and boring. Something we have so far managed to avoid, adding an SD card to the Pi.
 
 This might seem like a step backwards - all it takes is hearing the word 'SD card' and suddenly images of readers, adaptors, converters and corrupted files flash by.
 
-But I've convinced myself it's a necessary evil, the SD is purely for OS bootstrapping incase of an outage, and I have ideas on how to do it completely automatically.
+The plan is to add an SD card to at least one Pi in the cluster, this allows them to boot from their last good configuration, and when they come online they will attempt to become the new master node.
+
+I've convinced myself it's a necessary evil. The SD is purely for OS bootstrapping incase of an outage, no user intervention required.
 
 ### Automating SD Flashing
 
@@ -108,59 +108,3 @@ TODO SCREENSHOT HERE
 Then when I rebooted the Pi and it happily booted from the SD, up and running and ready to go, without relying on the bootstrap VM anymore.
 
 TODO SCREENSHOT HERE
-
-### Creating Netboot server on Master Node
-
-Progress feels good so far.
-
-We can now take an Raspberry Pi with a blank SD card, plug it in to our network and without any further interaction it will turn itself into a fully configured and active NixOS install.
-
-But we're **still** relying on the bootstrap VM for most of this process, we need to give master nodes the ability to fill this gap.
-
-In order to do this I'm going to update my custom `sd/default.nix` configuration files, this time defining a kubernetes workload that reproduces our bootstrap server (NFS, TFTP and OS generation).
-
-```
-  services = {
-    k3s = {
-      enable = true;
-      role = "agent";
-      token = "todo-pi-k3s-gitops";
-      serverAddr = "https://192.168.0.108:6443";
-      extraFlags = toString [
-        "--debug"
-      ];
-    };
-  }
-
-  networking = {
-    hostName = "pi-k3s-gitops-sd-${builtins.substring 0 10 (builtins.hashString "sha256" "pi-k3s-gitops")}";
-    firewall = {
-      allowedTCPPorts = [
-        # SSH
-        22
-
-        # Kubernetes API Server
-        6443
-
-        # NFSv3
-        111
-        2049
-        32765-32768
-      ];
-      allowedUDPPorts = [
-        # TFTP
-        69
-
-        # NFSv3
-        111
-        2049
-        32765-32768
-      ];
-    };
-  };
-```
-
-### IP Reconciliation
-TODO
-Nodes with SD cards should scan the network (arp? kubctl?) and detect if TFTP_IP/Option 66/192.168.0.108 exists
-If the master node can not be found, then the SD card node tries to take the TFTP_IP for itself and become the new master

@@ -3,9 +3,11 @@ title: About
 description: Getting going
 ---
 
-If at first you have nothing in your hands but a Raspberry Pi with no OS, you're in the right place.
+If you are looking to boot a Raspberry Pi without any storage devices (SD Cards, USB, etc), you're in the right place.
 
-The aim of this project is to automate as much as the process as possible - so to bootstrap the cluster I'll be using Netboot / PXE.
+Using the PXE / Netboot protocols you can boot devices that are ready to go with just a network cable
+
+This guide covers the process of booting a pre-configured OS on a Raspberry Pi 5
 
 ### Prerequisites
 :::caution[Docker under non Linux Hosts]

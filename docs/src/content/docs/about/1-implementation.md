@@ -81,7 +81,7 @@ This alone is enough to make the Pi not an option for a lot people, for a lesser
 But for now I've committed and the Pi 5 it is.
 
 ![alt text](../../../assets/docs/about/node.png)
-#### Node cost
+#### Node configuration
 | Configuration               | Master | Netboot | Cluster Storage  | Cost                   |
 |-----------------------------|--------|-------|------------------|------------------------|
 | Pi + SD + NVMe + PoE        |  ✅   |  ❌   |  ✅              | £80+£5+£15+£22 = £122 |

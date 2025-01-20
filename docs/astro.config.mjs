@@ -34,8 +34,8 @@ export default defineConfig({
                             autogenerate: { directory: 'guides/Netboot' },
                         },
                         {
-                            label: 'Master Node Creation',
-                            autogenerate: { directory: 'guides/Master Node Creation' },
+                            label: 'Declarative Cluster',
+                            autogenerate: { directory: 'guides/Declarative Cluster' },
                         },
                     ]
 				},

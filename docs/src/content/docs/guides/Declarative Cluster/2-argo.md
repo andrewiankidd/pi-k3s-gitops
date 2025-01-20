@@ -1,6 +1,6 @@
 ---
 title: Argo CD
-description: Hunting for gold
+description: Ship for success
 draft: true
 ---
 
