@@ -7,4 +7,7 @@ src/bootstrap/netboot/boot/*
 src/bootstrap/netboot/os/*
 /vm/
 /src/bootstrap/netboot/raspberry-pi-nix/
-/src/bootstrap/netboot/.nix_ready
+*.env
+!example.env
+!/src/bootstrap/netboot/.env
+keys.txt

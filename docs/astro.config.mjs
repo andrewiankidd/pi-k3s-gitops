@@ -37,6 +37,10 @@ export default defineConfig({
                             label: 'Declarative Cluster',
                             autogenerate: { directory: 'guides/Declarative Cluster' },
                         },
+                        {
+                            label: 'Other',
+                            autogenerate: { directory: 'guides/Other' },
+                        },
                     ]
 				},
 				{

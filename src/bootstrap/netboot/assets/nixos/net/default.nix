@@ -1,12 +1,51 @@
 { config, pkgs, ... }:
 
 let
-  # Define shared variables
-  k3sServerAddr = "https://192.168.0.108:6443";
-  k3sToken = "todo-pi-k3s-gitops";
+  # System
+  rootPassword = builtins.getEnv "ROOT_PASSWORD";
 
-  # Define the plaintext password
-  argoPassword = "admin1234";
+  # Kubernetes
+  k3sServerAddr = builtins.getEnv "K3S_SERVER_ADDRESS";
+  k3sToken = builtins.getEnv "K3S_TOKEN";
+
+  # Argo CD
+  argoPassword = builtins.getEnv "ARGOCD_PASSWORD";
+
+  # age
+  # agePublicKey = builtins.getEnv "AGE_PUBLICKEY";
+  # agePrivateKeyFile = pkgs.writeTextFile {
+  #   name = "age-private-key";
+  #   text = builtins.getEnv "AGE_PRIVATEKEY";
+  #   destination = "/etc/secrets/secrets.yml";
+  # };
+
+
+  # gpgPrivateKeyBase64 = builtins.getEnv "GPG_PRIVATE_KEY_B64";
+  # gpgPrivateKeyFileContents = pkgs.runCommand "gpg-private-key" { buildInputs = [ pkgs.openssl ]; } ''
+  #   echo "${gpgPrivateKeyBase64}" | openssl base64 -d > $out
+  # '';
+  # gpgPrivateKeyFile = pkgs.writeTextFile {
+  #   name = "gpg-private-key.asc";
+  #   text = gpgPrivateKeyFileContents;
+  #   destination = "/etc/secrets/gpg-private-key.asc";
+  # };
+
+  # Cloudflare
+  cloudflareCredsB64 = builtins.getEnv "CLOUDFLARE_CREDS_B64";
+  cloudflareCredsFileContents = pkgs.runCommand "gpg-private-key" { buildInputs = [ pkgs.openssl ]; } ''
+    echo "${cloudflareCredsB64}" | openssl base64 -d > $out
+  '';
+  cloudflareCredsFile = pkgs.writeTextFile {
+    name = "cloudflared-creds.json";
+    text = cloudflareCredsFileContents;
+    destination = "/etc/secrets/cloudflared-creds.json";
+  };
+  cloudflareTunnelId = builtins.getEnv "CLOUDFLARE_TUNNEL_ID";
+  cloudflareDefault = builtins.getEnv "CLOUDFLARE_DEFAULT";
+  cloudflareIngressService = builtins.getEnv "CLOUDFLARE_INGRESS_SERVICE";
+  cloudflareDomain = builtins.getEnv "CLOUDFLARE_DOMAIN";
+
+  # sopsSecrets = builtins.getEnv "SOPS_SECRETS";
 
   # hostname
   possibleHostnames = [ "manwe" "varda" "ulmo" "yavanna" "aule" "mandos" "nienna" "orome" ];
@@ -20,7 +59,7 @@ in
 {
   # System configuration
   time.timeZone = "Europe/London";
-  users.users.root.initialPassword = "todo";
+  users.users.root.initialPassword = rootPassword;
 
   environment.systemPackages = with pkgs; [
     helm
@@ -28,7 +67,56 @@ in
     fuse-overlayfs
     fuse3
     nfs-utils
+    cloudflared
+    # sops
   ];
+
+  # files to create in /etc/
+  environment.etc."secrets/k3s/cluster-config.env" = {
+    text = ''
+      K3S_URL=${k3sServerAddr}
+      K3S_TOKEN=${k3sToken}
+      PATH=${pkgs.fuse-overlayfs}/bin:/run/current-system/sw/bin:$PATH
+    '';
+  };
+#   environment.etc."secrets/secrets.yml" = {
+#     source = pkgs.writeTextFile {
+#       name = "sops-secrets";
+#       text = ''
+#         ${sopsSecrets}
+#       '';
+#     };
+#   };
+#   environment.etc."sops.yaml" = {
+#     source = pkgs.writeTextFile {
+#       name = "sops-config";
+#       text = ''
+#         keys:
+#           - &primary ${agePublicKey}
+#         creation_rules:
+#           - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+#             key_groups:
+#             - age:
+#               - *primary
+#         '';
+#     };
+#   };
+
+#   sops = {
+#     age.keyFile = "/etc/secrets/key.txt";
+#     defaultSopsFile = "/etc/secrets/secrets.yml";
+#     validateSopsFiles = false;
+#     secrets = {
+#       "cloudflared-creds" = {
+#         path = "/etc/secrets/cloudflared-cred.json";
+#       };
+#     };
+#   };
+
+  # boot.postBootCommands = ''
+  #   # Import the private key into the GPG keyring after boot
+  #   gpg --import ${gpgPrivateKeyFile}
+  # '';
 
   services = {
 
@@ -102,7 +190,7 @@ in
       {
       enable = true;
       role = "server";
-      environmentFile = "/etc/k3s/cluster-config.env";
+      environmentFile = "/etc/secrets/k3s/cluster-config.env";
       extraFlags = toString [
         "--snapshotter=fuse-overlayfs"
         "--etcd-snapshot-schedule-cron=0"
@@ -372,24 +460,37 @@ in
           ];
         };
       };
+      # manifests.cloudflareSecret.content = {
+      #   apiVersion = "v1";
+      #   kind = "Secret";
+      #   metadata = {
+      #       name = "cloudflare";
+      #       namespace = "cloudflare-gateway";
+      #   };
+      #   type = "Opaque";
+      #   stringData = {
+      #     ACCOUNT_ID = builtins.getEnv "CLOUDFLARE_ACCOUNT_ID" or "";
+      #     TOKEN = builtins.getEnv "CLOUDFLARE_TOKEN" or "";
+      #   };
+      # };
     };
 
-    # TODO
-    # cloudflared = {
-    #   enable = true;
-    #   tunnels = {
-    #     "00000000-0000-0000-0000-000000000000" = {
-    #       credentialsFile = "${config.sops.secrets.cloudflared-creds.path}";
-    #       ingress = {
-    #         "*.kidd.network" = {
-    #           service = "http://localhost:80";
-    #           path = "/*.(jpg|png|css|js)";
-    #         };
-    #       };
-    #       default = "http_status:404";
-    #     };
-    #   };
-    # };
+    #TODO
+    cloudflared = {
+      enable = true;
+      tunnels = {
+        cloudflareTunnelId = {
+          # credentialsFile = config.sops.secrets.cloudflared-creds.path;
+          credentialsFile = cloudflareCredsFile.outPath;
+          default = cloudflareDefault;
+          ingress = {
+            cloudflareDomain = {
+              service = cloudflareIngressService;
+            };
+          };
+        };
+      };
+    };
 
     # Enable SSH login for root
     openssh = {
@@ -428,9 +529,16 @@ in
     };
   };
 
+  fileSystems = {
+    "/etc/secrets" = {
+      device = "tmpfs";
+      fsType = "tmpfs";
+      options = [ "size=1M" ];
+    };
+  };
+
   systemd = {
     services = {
-
       # append to k3s PATH
       k3s.path = [
         pkgs.fuse-overlayfs
@@ -482,22 +590,19 @@ in
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
-          ExecStartPre = "${pkgs.bash}/bin/bash -c 'mkdir -p /etc/k3s'";
+          ExecStartPre = "${pkgs.bash}/bin/bash -c 'mkdir -p /etc/secrets/k3s'";
           ExecStart = pkgs.writeScript "k3s-check-cluster" ''
             #!${pkgs.bash}/bin/bash
             set -euo pipefail
 
             # output file
-            configFile="/etc/k3s/cluster-config.env"
-            echo "K3S_URL=${k3sServerAddr}" >> "$configFile"
-            echo "K3S_TOKEN=${k3sToken}" >> "$configFile"
-            echo "PATH=${pkgs.fuse-overlayfs}/bin:/run/current-system/sw/bin:$PATH" >> "$configFile"
+            envFile="/etc/secrets/k3s/cluster-config.env"
 
-            # Check if the cluster has already initialized on another node
+            # TODO: Check if the cluster has already initialized on another node
             if curl -sfk -H "Authorization: Bearer ${k3sToken}" "${k3sServerAddr}/healthz" > /dev/null 2>&1; then
-                echo "K3S_CLUSTER_INIT=false" > "$configFile"
+                echo "K3S_CLUSTER_INIT=false" > "$envFile"
             else
-                echo "K3S_CLUSTER_INIT=true" > "$configFile"
+                echo "K3S_CLUSTER_INIT=true" > "$envFile"
             fi
           '';
         };
@@ -531,9 +636,13 @@ in
       # };
     };
 
-    # Fix for https://github.com/longhorn/longhorn/issues/2166
     tmpfiles.rules = [
+      # Fix for https://github.com/longhorn/longhorn/issues/2166
       "L+ /usr/local/bin - - - - /run/current-system/sw/bin/"
+
+      # tmpfs-backed filesystem for secrets
+      "d /etc/secrets 0750 root root -"
+      "d /etc/sops 0755 root root -"
     ];
   };
 

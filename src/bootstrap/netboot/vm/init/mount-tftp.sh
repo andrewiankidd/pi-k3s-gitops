@@ -30,6 +30,11 @@ fi
 #   echo "Entry already exists in /etc/fstab."
 # fi
 
+# if already exists, remove the test file
+if [ -f "${TFTP_MOUNT_POINT}/$TEST_FILE" ]; then
+    rm "${TFTP_MOUNT_POINT}/$TEST_FILE"
+fi
+
 # Use TFTP client to fetch a file as a test
 echo "Testing TFTP connection..."
 tftp -v ${TFTP_SERVER} -c get $TEST_FILE ${TFTP_MOUNT_POINT}/$TEST_FILE

@@ -77,7 +77,12 @@ Tutorials / Steps / Guides / Wikis / Forum Posts in no particular order
 - [NixOS Configuration Options](https://search.nixos.org/options?channel=unstable&from=0&size=50&sort=relevance&type=packages&query=systemd.services)
 - [GitHub Issue: NixOS: Building aarch64 installer fails due to Exec format Error #59](https://github.com/nix-community/nixos-generators/issues/59)
 - [GitHub Issue: NixOS: Raspberry Pi 5 support](https://github.com/NixOS/nixpkgs/issues/260754)
+- [Sops](https://github.com/Mic92/sops-nix)
+- [0xda sops blog](https://0xda.de/blog/2024/07/framework-and-nixos-sops-nix-secrets-management/)
 
 ### Netboot
 - [PXE Booting Raspberry Pis](https://ltm56.com/pxe-booting-raspberry-pis/)
 - [Raspberry Pi PXE Boot – Network booting a Pi 4 without an SD card](https://linuxhit.com/raspberry-pi-pxe-boot-netbooting-a-pi-4-without-an-sd-card/)
+
+### Cloudflare
+ - [Cloudflare Docs](https://developers.cloudflare.com)

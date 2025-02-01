@@ -1,0 +1,28 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: origin-ca-issuer
+spec:
+  ca:
+    secretName: cloudflare-origin-ca-keypair
+---
+# apiVersion: cert-manager.io/v1
+# kind: Issuer
+# metadata:
+#   name: letsencrypt-dev-wcard
+#   namespace: dev
+# spec:
+#   acme:
+#     email: contact@andrewkidd.co.uk
+#     server: https://acme-staging-v02.api.letsencrypt.org/directory
+#     # server: https://acme-v02.api.letsencrypt.org/directory
+#     privateKeySecretRef:
+#       name: letsencrypt-dev-wcard-private
+#     solvers:
+#     # Use the DigitalOcean DNS API to manage DNS01 challenge records.
+#       - dns01:
+#           cloudDNS:
+#             project: pi-k3s-gitops
+#             serviceAccountSecretRef:
+#               name: prod-clouddns-svc-acct-secret
+#               key: service-account.json

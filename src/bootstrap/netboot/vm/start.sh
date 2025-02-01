@@ -69,7 +69,7 @@ if [ "$VM_REBUILD" = true ] || [ "$VM_EXISTS" = false ]; then
     echo "CPUs: $VM_CPUS, Memory: $VM_MEMORY, Disk: $VM_DISK"
 
     # Create VM using Multipass
-    multipass launch $VM_OS --name $VM_NAME --cpus $VM_CPUS --memory $VM_MEMORY --disk $VM_DISK --bridged
+    multipass launch $VM_OS --name $VM_NAME --cpus $VM_CPUS --memory $VM_MEMORY --disk $VM_DISK --bridged --cloud-init $SCRIPT_DIR/cloud-config.yaml
     if [ $? -ne 0 ]; then
         echo "Failed to create VM. Please ensure Multipass is installed and running."
         exit 1
@@ -107,6 +107,14 @@ echo "Applying network configuration on VM '$VM_NAME'..."
 multipass exec "$VM_NAME" -- bash -c "chmod +x //home/ubuntu/netboot/vm/init/net.sh"
 timeout 10 multipass exec "$VM_NAME" -- bash //home/ubuntu/netboot/vm/init/net.sh
 multipass restart $VM_NAME
+
+# check can access internet
+multipass exec "$VM_NAME" -- ping -c 1 google.com
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+    echo "Failed to set up networking inside the VM ($EXIT_CODE)"
+    exit 1
+fi
 
 # Display VM information
 multipass info $VM_NAME

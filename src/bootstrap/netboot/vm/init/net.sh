@@ -27,6 +27,10 @@ echo "network:
   ethernets:
       eth0:
         activation-mode: off
+        dhcp4: true
+        dhcp4-overrides:
+            route-metric: 100
+            use-routes: false
       $INTERFACE:
           dhcp4: false
           dhcp6: false
@@ -35,6 +39,7 @@ echo "network:
           routes:
               - to: default
                 via: $GATEWAY
+                metric: 200
           nameservers:
             addresses: [$DNS]
 " | sudo tee $NETPLAN_CONFIG_PATH > /dev/null
@@ -43,10 +48,7 @@ sudo chmod 600 $NETPLAN_CONFIG_PATH
 # show current config
 ip a show $INTERFACE
 
-# Apply the new configuration
+# Apply the new configuration (causes restart)
 # Shows unrelated warnings https://bugs.launchpad.net/ubuntu/+source/netplan.io/+bug/2041727
 echo "netplan apply $(sudo cat $NETPLAN_CONFIG_PATH)"
 sudo netplan apply
-
-echo "netplan applied!"
-ip a show $INTERFACE
