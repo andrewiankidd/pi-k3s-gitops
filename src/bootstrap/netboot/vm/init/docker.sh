@@ -9,12 +9,13 @@ lsb_release -a
 ip a
 
 # source .env
-if [ -f "./.env" ]; then
-    echo "Sourcing .env file..."
-    source "./.env"
+ENV_FILE=${ENV_FILE:-"./.env"}
+if [ -f "$ENV_FILE" ]; then
+    echo "Sourcing $ENV_FILE file..."
+    source "$ENV_FILE"
 else
-    echo "No .env file found."
-    ls -la $PARENT_DIR
+    echo "No $ENV_FILE found."
+    exit 1
 fi
 
 # Enable support for additional binary formats

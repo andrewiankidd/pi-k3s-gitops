@@ -647,7 +647,7 @@ in
   };
 
   networking = {
-    hostName = "pi-k3s-gitops-${randomHostName}-${builtins.substring 0 10 (builtins.hashString "sha256" "pi-k3s-gitops")}";
+    hostName = "${randomHostName}-${builtins.substring 0 10 (builtins.hashString "sha256" "pi-k3s-gitops")}";
     useDHCP = false;
     interfaces = {
       wlan0.useDHCP = true;

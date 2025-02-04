@@ -34,11 +34,13 @@ fi
 
 # source .env
 if [ -f "$PARENT_DIR/.env" ]; then
-    echo "Sourcing .env file..."
-    source "$PARENT_DIR/.env"
+    export ENV_FILE="$PARENT_DIR/.env"
+    echo "Sourcing $ENV_FILE..."
+    source "$ENV_FILE"
 else
     echo "No .env file found."
     ls -la $PARENT_DIR
+    exit 1
 fi
 
 # Set the default bridged network for created VMs
@@ -52,23 +54,25 @@ fi
 
 # check if we need to create vm
 echo "checking for existing VM '$VM_NAME'..."
-multipass purge
 VM_EXISTS=$(multipass list | grep -q "^$VM_NAME\s" && echo true || echo false)
-if [ "$VM_REBUILD" = true ] || [ "$VM_EXISTS" = false ]; then
+
+# if vm doesn't exist or VM_REBUILD is true
+# create vm
+if [ "$VM_EXISTS" = false ] || [ "$VM_REBUILD" = true ]; then
+
+    # if rebuild then delete existing
     if [ "$VM_REBUILD" = true ]; then
         echo "[VM_REBUILD] Deleting existing VM..."
-        multipass delete $VM_NAME
-        multipass purge
+        multipass delete $VM_NAME --purge
         if [ $? -ne 0 ]; then
             echo "Failed to delete VM."
             exit 1
         fi
     fi
 
+    # Create VM using Multipass
     echo "Creating new VM '$VM_NAME' with the following settings:"
     echo "CPUs: $VM_CPUS, Memory: $VM_MEMORY, Disk: $VM_DISK"
-
-    # Create VM using Multipass
     multipass launch $VM_OS --name $VM_NAME --cpus $VM_CPUS --memory $VM_MEMORY --disk $VM_DISK --bridged --cloud-init $SCRIPT_DIR/cloud-config.yaml
     if [ $? -ne 0 ]; then
         echo "Failed to create VM. Please ensure Multipass is installed and running."
@@ -86,29 +90,47 @@ if [[ "$OS" == "Windows_NT" ]]; then
 fi
 
 # Mount the parent directory to the VM if not already mounted
-echo "Checking if parent directory '$PARENT_DIR' is already mounted to VM '$VM_NAME'..."
+# FYI Multipass mounts seem to be broken so I would avoid using them
+# echo "Checking if parent directory '$PARENT_DIR' is already mounted to VM '$VM_NAME'..."
+# MOUNT_PATH="/home/ubuntu/netboot"
+# MOUNT_STR="$VM_NAME:$MOUNT_PATH"
+# if ! multipass info "$VM_NAME" | grep -q "$PARENT_DIR_NAME => $MOUNT_PATH"; then
+#     echo "Mounting parent directory '$PARENT_DIR' to VM '$VM_NAME'..."
+#     MOUNT_OUTPUT=$(multipass mount "$PARENT_DIR" "$MOUNT_STR")
+#     if [[ $? -eq 0 ]] || [[ "$MOUNT_OUTPUT" == *"is already mounted"* ]]; then
+#         echo "Parent directory mounted successfully to '$MOUNT_STR'"
+#     else
+#         echo "Failed to mount '$MOUNT_STR'"
+#         exit 1
+#     fi
+# else
+#     echo "Parent directory '$PARENT_DIR' is already mounted to VM '$VM_NAME'"
+# fi
+
+
+# Copy files to the VM
+SOURCE_PATH="."
 MOUNT_PATH="/home/ubuntu/netboot"
-MOUNT_STR="$VM_NAME:$MOUNT_PATH"
-if ! multipass info "$VM_NAME" | grep -q "$PARENT_DIR_NAME => $MOUNT_PATH"; then
-    echo "Mounting parent directory '$PARENT_DIR' to VM '$VM_NAME'..."
-    MOUNT_OUTPUT=$(multipass mount "$PARENT_DIR" "$MOUNT_STR")
-    if [[ $? -eq 0 ]] || [[ "$MOUNT_OUTPUT" == *"is already mounted"* ]]; then
-        echo "Parent directory mounted successfully to '$MOUNT_STR'"
-    else
-        echo "Failed to mount '$MOUNT_STR'"
-        exit 1
-    fi
-else
-    echo "Parent directory '$PARENT_DIR' is already mounted to VM '$VM_NAME'"
+# CLR_CMD="multipass exec $VM_NAME -- rm -rf '$MOUNT_PATH'"
+# echo "Executing: $CLR_CMD"
+# eval $CLR_CMD
+COPY_CMD="multipass transfer -v -r '$SOURCE_PATH' '$VM_NAME:$MOUNT_PATH'"
+echo "Executing: $COPY_CMD"
+eval $COPY_CMD
+EXIT_CODE=$?
+if [ $EXIT_CODE -ne 0 ]; then
+    echo "Failed to copy files to VM. ($EXIT_CODE)"
+    exit 1
 fi
 
 # Execute the net.sh script inside the VM
-echo "Applying network configuration on VM '$VM_NAME'..."
-multipass exec "$VM_NAME" -- bash -c "chmod +x //home/ubuntu/netboot/vm/init/net.sh"
-timeout 10 multipass exec "$VM_NAME" -- bash //home/ubuntu/netboot/vm/init/net.sh
-multipass restart $VM_NAME
+# echo "Applying network configuration on VM '$VM_NAME'..."
+# multipass exec "$VM_NAME" -- bash -c "chmod +x //home/ubuntu/netboot/vm/init/net.sh"
+# timeout 10 multipass exec "$VM_NAME" -- bash //home/ubuntu/netboot/vm/init/net.sh
+# multipass restart $VM_NAME
 
 # check can access internet
+echo "checking network"
 multipass exec "$VM_NAME" -- ping -c 1 google.com
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then
@@ -122,7 +144,7 @@ multipass info $VM_NAME
 # Execute the init.sh script inside the VM
 echo "Starting docker configuration on VM '$VM_NAME'..."
 multipass exec "$VM_NAME" -- bash -c "chmod +x //home/ubuntu/netboot/vm/init/docker.sh"
-multipass exec "$VM_NAME" -- bash //home/ubuntu/netboot/vm/init/docker.sh
+multipass exec "$VM_NAME" --working-directory //home/ubuntu/netboot -- bash //home/ubuntu/netboot/vm/init/docker.sh
 EXIT_CODE=$?
 if [ $EXIT_CODE -eq 0 ]; then
     echo "docker.sh executed successfully inside the VM"
@@ -132,7 +154,7 @@ else
 fi
 
 echo "Mounting TFTP share for testing..."
-multipass exec "$VM_NAME" -- bash //home/ubuntu/netboot/vm/init/mount-tftp.sh
+multipass exec "$VM_NAME" --working-directory //home/ubuntu/netboot -- bash //home/ubuntu/netboot/vm/init/mount-tftp.sh
 EXIT_CODE=$?
 if [ $EXIT_CODE -eq 0 ]; then
     echo "mount-tftp.sh executed successfully inside the VM"
@@ -142,7 +164,7 @@ else
 fi
 
 echo "Mounting NFS share for testing..."
-multipass exec "$VM_NAME" -- bash //home/ubuntu/netboot/vm/init/mount-nfs.sh
+multipass exec "$VM_NAME" --working-directory //home/ubuntu/netboot -- bash //home/ubuntu/netboot/vm/init/mount-nfs.sh
 EXIT_CODE=$?
 if [ $EXIT_CODE -eq 0 ]; then
     echo "mount-nfs.sh executed successfully inside the VM"
@@ -152,7 +174,7 @@ else
 fi
 
 # print docker logs
-multipass exec $VM_NAME -- docker compose --profile $COMPOSE_PROFILE logs --follow --tail 100
+multipass exec $VM_NAME --working-directory //home/ubuntu/netboot -- docker compose --profile $COMPOSE_PROFILE logs --follow --tail 100
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then
     echo "Failed to get docker logs inside the VM ($EXIT_CODE)"

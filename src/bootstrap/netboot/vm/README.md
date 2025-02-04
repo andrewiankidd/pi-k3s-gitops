@@ -68,5 +68,6 @@ multipass shell $VM_NAME
 
 If the VM gets in a bad state, or you're having issues with it, I recommend just removing it so you can recreate it:
 ```
-source src\bootstrap\netboot\.env && multipass delete $VM_NAME && multipass purge && src\bootstrap\netboot\vm\start.sh
+cd src\bootstrap\netboot
+source .env && multipass delete $VM_NAME --purge && .\vm\start.sh
 ```
