@@ -14,7 +14,7 @@ TFTP_MOUNT_POINT="/tmp"  # Mount point for TFTP
 TEST_FILE="test.txt"
 
 # Install TFTP client
-sudo apt-get update -q && sudo apt-get install -yq tftp-hpa
+# sudo apt-get update -q && sudo apt-get install -yq tftp-hpa
 
 # Create the mount point if it doesn't exist
 if [ ! -d "${TFTP_MOUNT_POINT}" ]; then

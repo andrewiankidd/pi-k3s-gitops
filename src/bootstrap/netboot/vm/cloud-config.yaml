@@ -1,20 +1,44 @@
-#cloud-config
-# network:
-#   version: 2
-#   ethernets:
-#     eth0:
-#       dhcp4: true
-#       dhcp4-overrides:
-#         route-metric: 100
-#     eth1:
-#       dhcp4: false
-#       dhcp6: false
-#       addresses:
-#         - 192.168.0.108/24
-#       routes:
-#         - to: default
-#           via: 192.168.0.1
-#           metric: 200
-#       nameservers:
-#         addresses:
-#           - 192.168.0.1
+# cloud-config
+
+packages:
+  - git
+  - docker.io
+  - docker-compose-v2
+  - gcc-aarch64-linux-gnu
+  - binutils-aarch64-linux-gnu
+  - qemu-user-static
+  - nfs-common
+  - tftp-hpa
+
+write_files:
+- path: /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
+  permissions: '0644'
+  content: |
+    network: {config: disabled}
+
+- path: /etc/netplan/99-static-ip.yaml
+  permissions: '0600'
+  content: |
+    network:
+      version: 2
+      renderer: networkd
+      ethernets:
+        eth1:
+          dhcp4: false
+          dhcp6: false
+          addresses:
+            - 192.168.0.108/24
+          routes:
+            - to: default
+              via: 192.168.0.1
+          nameservers:
+            addresses:
+            - 192.168.0.1
+
+runcmd:
+ - rm /etc/netplan/50-cloud-init.yaml
+ - netplan generate
+ - netplan apply
+
+output:
+  {all: '| tee -a /var/log/cloud-init-output.log'}

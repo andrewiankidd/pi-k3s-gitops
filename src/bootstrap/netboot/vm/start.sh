@@ -61,7 +61,7 @@ VM_EXISTS=$(multipass list | grep -q "^$VM_NAME\s" && echo true || echo false)
 if [ "$VM_EXISTS" = false ] || [ "$VM_REBUILD" = true ]; then
 
     # if rebuild then delete existing
-    if [ "$VM_REBUILD" = true ]; then
+    if [ "$VM_EXISTS" = true -a "$VM_REBUILD" = true ]; then
         echo "[VM_REBUILD] Deleting existing VM..."
         multipass delete $VM_NAME --purge
         if [ $? -ne 0 ]; then
@@ -131,15 +131,12 @@ fi
 
 # check can access internet
 echo "checking network"
-multipass exec "$VM_NAME" -- ping -c 1 google.com
+multipass exec "$VM_NAME" -- ping -c 1 1.1.1.1
 EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ]; then
     echo "Failed to set up networking inside the VM ($EXIT_CODE)"
     exit 1
 fi
-
-# Display VM information
-multipass info $VM_NAME
 
 # Execute the init.sh script inside the VM
 echo "Starting docker configuration on VM '$VM_NAME'..."

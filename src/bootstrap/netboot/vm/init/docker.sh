@@ -23,12 +23,12 @@ sudo modprobe binfmt_misc
 sudo mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
 
 # install docker and docker-compose
-sudo apt-get update -q && sudo apt-get install -yq docker.io docker-compose-v2
+# sudo apt-get update -q && sudo apt-get install -yq docker.io docker-compose-v2
 sudo usermod -aG docker ubuntu
 
 # dependencies for cross compilation
-sudo apt-get install -yq gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
-sudo apt-get install -yq qemu-user-static
+# sudo apt-get install -yq gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+# sudo apt-get install -yq qemu-user-static
 
 # stop services that interfere with our servers
 sudo modprobe nfs
