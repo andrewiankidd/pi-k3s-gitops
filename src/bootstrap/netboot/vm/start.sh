@@ -123,12 +123,6 @@ if [ $EXIT_CODE -ne 0 ]; then
     exit 1
 fi
 
-# Execute the net.sh script inside the VM
-# echo "Applying network configuration on VM '$VM_NAME'..."
-# multipass exec "$VM_NAME" -- bash -c "chmod +x //home/ubuntu/netboot/vm/init/net.sh"
-# timeout 10 multipass exec "$VM_NAME" -- bash //home/ubuntu/netboot/vm/init/net.sh
-# multipass restart $VM_NAME
-
 # check can access internet
 echo "checking network"
 multipass exec "$VM_NAME" -- ping -c 1 1.1.1.1
