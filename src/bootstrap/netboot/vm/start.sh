@@ -90,38 +90,37 @@ if [[ "$OS" == "Windows_NT" ]]; then
 fi
 
 # Mount the parent directory to the VM if not already mounted
-# FYI Multipass mounts seem to be broken so I would avoid using them
-# echo "Checking if parent directory '$PARENT_DIR' is already mounted to VM '$VM_NAME'..."
-# MOUNT_PATH="/home/ubuntu/netboot"
-# MOUNT_STR="$VM_NAME:$MOUNT_PATH"
-# if ! multipass info "$VM_NAME" | grep -q "$PARENT_DIR_NAME => $MOUNT_PATH"; then
-#     echo "Mounting parent directory '$PARENT_DIR' to VM '$VM_NAME'..."
-#     MOUNT_OUTPUT=$(multipass mount "$PARENT_DIR" "$MOUNT_STR")
-#     if [[ $? -eq 0 ]] || [[ "$MOUNT_OUTPUT" == *"is already mounted"* ]]; then
-#         echo "Parent directory mounted successfully to '$MOUNT_STR'"
-#     else
-#         echo "Failed to mount '$MOUNT_STR'"
-#         exit 1
-#     fi
-# else
-#     echo "Parent directory '$PARENT_DIR' is already mounted to VM '$VM_NAME'"
-# fi
-
-
-# Copy files to the VM
-SOURCE_PATH="."
+echo "Checking if parent directory '$PARENT_DIR' is already mounted to VM '$VM_NAME'..."
 MOUNT_PATH="/home/ubuntu/netboot"
-# CLR_CMD="multipass exec $VM_NAME -- rm -rf '$MOUNT_PATH'"
-# echo "Executing: $CLR_CMD"
-# eval $CLR_CMD
-COPY_CMD="multipass transfer -v -r '$SOURCE_PATH' '$VM_NAME:$MOUNT_PATH'"
-echo "Executing: $COPY_CMD"
-eval $COPY_CMD
-EXIT_CODE=$?
-if [ $EXIT_CODE -ne 0 ]; then
-    echo "Failed to copy files to VM. ($EXIT_CODE)"
-    exit 1
+MOUNT_STR="$VM_NAME:$MOUNT_PATH"
+if ! multipass info "$VM_NAME" | grep -q "$PARENT_DIR_NAME => $MOUNT_PATH"; then
+    echo "Mounting parent directory '$PARENT_DIR' to VM '$VM_NAME'..."
+    MOUNT_OUTPUT=$(multipass mount "$PARENT_DIR" "$MOUNT_STR")
+    if [[ $? -eq 0 ]] || [[ "$MOUNT_OUTPUT" == *"is already mounted"* ]]; then
+        echo "Parent directory mounted successfully to '$MOUNT_STR'"
+    else
+        echo "Failed to mount '$MOUNT_STR'"
+        exit 1
+    fi
+else
+    echo "Parent directory '$PARENT_DIR' is already mounted to VM '$VM_NAME'"
 fi
+
+
+# # Copy files to the VM
+# SOURCE_PATH="."
+# MOUNT_PATH="/home/ubuntu/netboot"
+# # CLR_CMD="multipass exec $VM_NAME -- rm -rf '$MOUNT_PATH'"
+# # echo "Executing: $CLR_CMD"
+# # eval $CLR_CMD
+# COPY_CMD="multipass transfer -v -r '$SOURCE_PATH' '$VM_NAME:$MOUNT_PATH'"
+# echo "Executing: $COPY_CMD"
+# eval $COPY_CMD
+# EXIT_CODE=$?
+# if [ $EXIT_CODE -ne 0 ]; then
+#     echo "Failed to copy files to VM. ($EXIT_CODE)"
+#     exit 1
+# fi
 
 # check can access internet
 echo "checking network"

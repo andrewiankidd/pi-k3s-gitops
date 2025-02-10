@@ -108,6 +108,8 @@ if [ -d "$SRC_CONFIG_DIR" ]; then
             rm -rf ~/.cache
         fi
     fi
+    printenv
+    exit 1
     nix build --repair --option substitute true --option fallback false --system aarch64-linux --extra-experimental-features "nix-command flakes" '.#nixosConfigurations.rpi-example.config.system.build.sdImage' --show-trace --print-build-logs -v
     SD_OUTPUT_DIR=result/sd-image
     SD_IMAGE_NAME=$(basename $(ls -t $SD_OUTPUT_DIR/*.img.zst | head -1))
