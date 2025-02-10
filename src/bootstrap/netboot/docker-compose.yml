@@ -77,6 +77,7 @@ services:
       - nixos
     env_file:
       - .env
+      - assets/nixos/.env
     volumes:
       - .:/mnt/netboot
       - netboot-boot-data:/mnt/netboot/boot
